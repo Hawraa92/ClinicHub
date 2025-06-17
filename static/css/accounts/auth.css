@@ -1,0 +1,258 @@
+/* =====================================
+   Enhanced Auth Forms Styling (auth.css)
+   ===================================== */
+
+/* ---------- Global Font & Reset ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f0f4f8;
+  color: #333;
+}
+
+/* ---------- Auth Card Container ---------- */
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+  margin: 2rem auto;
+  background: #ffffff;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+/* Add a subtle top accent bar */
+.auth-card::before {
+  content: '';
+  display: block;
+  height: 6px;
+  background: linear-gradient(90deg, #38b6ff, #917cf6);
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+/* ---------- Card Padding & Layout ---------- */
+.auth-card .card-content {
+  padding: 2.5rem 2rem 1.5rem;
+}
+
+/* Centered heading with decorative underline */
+.auth-card h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0d3b66;
+  text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.auth-card h2::after {
+  content: '';
+  width: 60px;
+  height: 4px;
+  background: #38b6ff;
+  display: block;
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+}
+
+/* ---------- Form Labels & Inputs ---------- */
+.auth-card .form-label {
+  font-weight: 500;
+  color: #4b4b4b;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.auth-card .form-control {
+  width: 100%;
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-card .form-control:focus {
+  border-color: #38b6ff;
+  box-shadow: 0 0 0 0.2rem rgba(56, 182, 255, 0.25);
+  outline: none;
+}
+
+/* Textarea or select if present */
+.auth-card textarea.form-control,
+.auth-card select.form-select {
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+/* Spacing between form groups */
+.auth-card .form-group {
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- Buttons ---------- */
+.auth-card .btn {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.auth-card .btn-primary {
+  background: #38b6ff;
+  border: none;
+  color: #fff;
+}
+
+.auth-card .btn-primary:hover {
+  background: #2fa1e5;
+  transform: translateY(-1px);
+}
+
+.auth-card .btn-primary:active {
+  background: #2a8cc9;
+  transform: translateY(0);
+}
+
+.auth-card .btn-success {
+  background: #49d3ad;
+  border: none;
+  color: #fff;
+}
+
+.auth-card .btn-success:hover {
+  background: #3cb499;
+  transform: translateY(-1px);
+}
+
+.auth-card .btn-success:active {
+  background: #339b82;
+  transform: translateY(0);
+}
+
+/* ---------- Links & Text Helpers ---------- */
+.auth-card a {
+  color: #38b6ff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.auth-card a:hover {
+  color: #2fa1e5;
+  text-decoration: underline;
+}
+
+/* “Forgot password?” link alignment */
+.auth-card .forgot-password {
+  display: block;
+  text-align: right;
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- Error & Help Text ---------- */
+.auth-card .form-text {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.auth-card .text-danger {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* “Already have an account?” section */
+.auth-card .text-center.mt-3 p {
+  font-size: 0.9rem;
+  color: #5a5a5a;
+}
+
+.auth-card .text-center.mt-3 a {
+  font-weight: 600;
+}
+
+/* ---------- Responsive Adjustments ---------- */
+@media (max-width: 576px) {
+  .auth-card {
+    margin: 1.5rem 1rem;
+  }
+
+  .auth-card .card-content {
+    padding: 2rem 1.5rem 1rem;
+  }
+}
+
+/* ---------- Optional Dark Mode Support ---------- */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1e2228;
+    color: #ddd;
+  }
+  .auth-card {
+    background: #2b2f36;
+    border: 1px solid #3a3f47;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  }
+  .auth-card::before {
+    background: linear-gradient(90deg, #5fbfff, #b08cff);
+  }
+  .auth-card h2 {
+    color: #e0e0e0;
+  }
+  .auth-card .form-control {
+    background: #3a3f47;
+    border: 1px solid #5a5f67;
+    color: #ddd;
+  }
+  .auth-card .form-control:focus {
+    border-color: #5fbfff;
+    box-shadow: 0 0 0 0.2rem rgba(95, 191, 255, 0.25);
+  }
+  .auth-card textarea.form-control,
+  .auth-card select.form-select {
+    background: #3a3f47;
+    border: 1px solid #5a5f67;
+    color: #ddd;
+  }
+  .auth-card .btn-primary {
+    background: #5fbfff;
+  }
+  .auth-card .btn-primary:hover {
+    background: #4daee0;
+  }
+  .auth-card .btn-success {
+    background: #6cd0b1;
+  }
+  .auth-card .btn-success:hover {
+    background: #56ad94;
+  }
+  .auth-card a {
+    color: #5fbfff;
+  }
+  .auth-card a:hover {
+    color: #4daee0;
+  }
+  .auth-card .form-text {
+    color: #a0a0a0;
+  }
+  .auth-card .text-center.mt-3 p {
+    color: #bbb;
+  }
+}

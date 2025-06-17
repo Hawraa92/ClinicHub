@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg p-4">
+    <h2 class="text-center mb-4 text-primary">✏ Edit Patient Information</h2>
+
+    <form method="post" class="needs-validation" novalidate>
+      {% csrf_token %}
+
+      <div class="row g-3">
+
+        {% if request.user.groups.first.name == "Doctors" %}
+          {# 🩺 Doctor sees and edits all fields #}
+          {% for field in form %}
+            <div class="col-md-6">
+              <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+
+        {% else %}
+          {# 🧾 Secretary sees limited fields only #}
+          {% for field in form %}
+            {% if field.name == 'full_name' or field.name == 'date_of_birth' or field.name == 'address' %}
+              <div class="col-md-6">
+                <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                  <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+      </div>
+
+      <div class="mt-4 text-end">
+        <button type="submit" class="btn btn-success btn-lg">💾 Save Changes</button>
+        <a href="{% url 'patients:detail' patient.pk %}" class="btn btn-secondary btn-lg">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

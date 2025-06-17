@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg p-4">
+    <h2 class="text-primary mb-3">🧾 Patient Details</h2>
+
+    <dl class="row">
+      <dt class="col-sm-3">Full Name:</dt>
+      <dd class="col-sm-9">{{ patient.full_name }}</dd>
+
+      <dt class="col-sm-3">Date of Birth:</dt>
+      <dd class="col-sm-9">{{ patient.date_of_birth }} ({{ patient.age }} years old)</dd>
+
+      <dt class="col-sm-3">Address:</dt>
+      <dd class="col-sm-9">{{ patient.address }}</dd>
+
+      {% if request.user.groups.first.name == "Doctors" %}
+        <dt class="col-sm-3">Gender:</dt>
+        <dd class="col-sm-9">{{ patient.get_gender_display }}</dd>
+
+        <dt class="col-sm-3">Mobile:</dt>
+        <dd class="col-sm-9">{{ patient.mobile }}</dd>
+
+        <dt class="col-sm-3">Email:</dt>
+        <dd class="col-sm-9">{{ patient.email }}</dd>
+
+        <dt class="col-sm-3">Past Medical History:</dt>
+        <dd class="col-sm-9">{{ patient.past_medical_history }}</dd>
+
+        <dt class="col-sm-3">Drug History:</dt>
+        <dd class="col-sm-9">{{ patient.drug_history }}</dd>
+
+        <dt class="col-sm-3">Investigations:</dt>
+        <dd class="col-sm-9">{{ patient.investigations }}</dd>
+
+        <dt class="col-sm-3">BMI:</dt>
+        <dd class="col-sm-9">{{ patient.bmi }}</dd>
+
+        <dt class="col-sm-3">HbA1c Level:</dt>
+        <dd class="col-sm-9">{{ patient.hbA1c_level }}</dd>
+
+        <dt class="col-sm-3">Blood Glucose Level:</dt>
+        <dd class="col-sm-9">{{ patient.blood_glucose_level }}</dd>
+
+        <dt class="col-sm-3">Hypertension:</dt>
+        <dd class="col-sm-9">{{ patient.hypertension|yesno:"Yes,No" }}</dd>
+
+        <dt class="col-sm-3">Heart Disease:</dt>
+        <dd class="col-sm-9">{{ patient.heart_disease|yesno:"Yes,No" }}</dd>
+
+        <dt class="col-sm-3">Smoking History:</dt>
+        <dd class="col-sm-9">{{ patient.smoking_history }}</dd>
+
+        <dt class="col-sm-3">Race:</dt>
+        <dd class="col-sm-9">{{ patient.race }}</dd>
+
+        <dt class="col-sm-3">Diabetes Prediction:</dt>
+        <dd class="col-sm-9">
+          {% if patient.diabetes_prediction == "Positive" %}
+            <span class="badge bg-danger">Positive</span>
+          {% elif patient.diabetes_prediction == "Negative" %}
+            <span class="badge bg-success">Negative</span>
+          {% else %}
+            <span class="badge bg-secondary">Pending</span>
+          {% endif %}
+        </dd>
+
+        <dt class="col-sm-3">Clinical Notes:</dt>
+        <dd class="col-sm-9">{{ patient.clinical_notes }}</dd>
+      {% endif %}
+    </dl>
+
+    <div class="text-end mt-3">
+      <a href="{% url 'patients:edit' patient.pk %}" class="btn btn-warning">✏ Edit</a>
+      <a href="{% url 'patients:list' %}" class="btn btn-secondary">← Back to List</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

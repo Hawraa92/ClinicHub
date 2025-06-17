@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تذكرة الموعد | ClinicHub</title>
+  <link rel="stylesheet" href="{% static 'css/appointments/appointment_ticket.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    .whatsapp-btn {
+      display: inline-block;
+      background-color: #25D366;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .whatsapp-btn:hover {
+      background-color: #1ebe5d;
+    }
+
+    .print-btn {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .print-btn button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .print-btn button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="ticket smart-card">
+  <div class="ticket-header">
+    <div class="logo"><i class="fas fa-stethoscope"></i></div>
+    <h2>ClinicHub</h2>
+    <p class="subtitle">نظام إدارة العيادات الذكي</p>
+  </div>
+
+  <hr>
+
+  <div class="ticket-section">
+    <div class="label">اسم المريض:</div>
+    <div class="value">{{ appointment.patient.full_name }}</div>
+  </div>
+
+  <div class="ticket-section">
+    <div class="label">الطبيب المعالج:</div>
+    <div class="value">د. {{ doctor_name }}</div>
+  </div>
+
+  <div class="ticket-section">
+    <div class="label">الاختصاص:</div>
+    <div class="value">{{ doctor_spec }}</div>
+  </div>
+
+  <div class="ticket-section highlight">
+    <div class="label">رقم الدور:</div>
+    <div class="value">P-{{ appointment.queue_number }}</div>
+  </div>
+
+  <div class="ticket-section">
+    <div class="label">التاريخ:</div>
+    <div class="value">{{ appointment.scheduled_time|date:"Y-m-d" }}</div>
+  </div>
+
+  <div class="ticket-section">
+    <div class="label">الوقت:</div>
+    <div class="value">{{ appointment.scheduled_time|date:"h:i A" }}</div>
+  </div>
+
+  <div class="ticket-section">
+    <div class="label">السكرتير:</div>
+    <div class="value">{{ secretary_name }}</div>
+  </div>
+
+  <div class="barcode">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ request.build_absolute_uri }}" alt="QR">
+    <p>APT-{{ appointment.id }}</p>
+  </div>
+
+  <div class="ticket-footer">
+    <p>يرجى الحضور قبل الموعد بـ 15 دقيقة</p>
+    <p>شكراً لاختياركم ClinicHub</p>
+  </div>
+
+  <!-- زر واتساب داخل التذكرة -->
+  <div style="text-align: center;">
+    <a href="https://wa.me/9647700000000?text=مرحباً، أود الاستفسار عن الموعد الخاص بـ {{ appointment.patient.full_name }} رقم الانتظار {{ appointment.queue_number }}"
+       target="_blank"
+       class="whatsapp-btn">
+      <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
+    </a>
+  </div>
+</div>
+
+<!-- زر الطباعة -->
+<div class="print-btn">
+  <button onclick="window.print()">🖨️ طباعة التذكرة</button>
+</div>
+
+</body>
+</html>

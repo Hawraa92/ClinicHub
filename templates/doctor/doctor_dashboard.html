@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/doctor/doctor_dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="sec-dash-bg">
+  <!-- Sidebar -->
+  <aside class="custom-sidebar">
+    <div class="sidebar-brand">
+      Dr. {{ doctor.full_name|default:request.user.username }}
+    </div>
+    <nav class="sidebar-menu">
+      {# Dashboard #}
+      <a href="{% url 'doctor:dashboard' %}"
+         class="sidebar-item{% if request.resolver_match.view_name == 'doctor:dashboard' %} active{% endif %}">
+        <span class="sidebar-glow"></span>
+        <i class="bi bi-house-door"></i>
+        <span class="sidebar-text">Dashboard</span>
+      </a>
+
+      {# Patients #}
+      <a href="{% url 'doctor:records' %}"
+         class="sidebar-item{% if request.resolver_match.view_name == 'doctor:records' %} active{% endif %}">
+        <span class="sidebar-glow"></span>
+        <i class="bi bi-people"></i>
+        <span class="sidebar-text">Patients</span>
+      </a>
+
+      {# Prescriptions List #}
+      <a href="{% url 'prescription:list' %}"
+         class="sidebar-item{% if request.resolver_match.view_name == 'prescription:list' %} active{% endif %}">
+        <span class="sidebar-glow"></span>
+        <i class="bi bi-file-medical"></i>
+        <span class="sidebar-text">Prescriptions</span>
+      </a>
+
+      {# Archive #}
+      <a href="{% url 'medical_archive:archive_list' %}"
+         class="sidebar-item{% if request.resolver_match.view_name == 'medical_archive:archive_list' %} active{% endif %}">
+        <span class="sidebar-glow"></span>
+        <i class="bi bi-archive"></i>
+        <span class="sidebar-text">Archive</span>
+      </a>
+
+      {# Queue Status #}
+      <a href="{% url 'appointments:queue' %}"
+         class="sidebar-item{% if request.resolver_match.view_name == 'appointments:queue' %} active{% endif %}">
+        <span class="sidebar-glow"></span>
+        <i class="bi bi-list-ul"></i>
+        <span class="sidebar-text">Queue Status</span>
+      </a>
+
+      {# New Prescription #}
+      {% if today_appointments %}
+        <a href="{% url 'prescription:create' appointment_id=today_appointments.first.id %}"
+           class="sidebar-item{% if request.resolver_match.view_name == 'prescription:create' %} active{% endif %}">
+          <span class="sidebar-glow"></span>
+          <i class="bi bi-plus-circle"></i>
+          <span class="sidebar-text">New Prescription</span>
+        </a>
+      {% else %}
+        <button type="button"
+                class="sidebar-item disabled has-tooltip"
+                data-tooltip="No appointments available for prescription today">
+          <span class="sidebar-glow"></span>
+          <i class="bi bi-plus-circle"></i>
+          <span class="sidebar-text">New Prescription</span>
+        </button>
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-logout">
+      <a href="{% url 'accounts:logout' %}" class="sidebar-item">
+        <span class="sidebar-glow"></span>
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="sidebar-text">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Dashboard -->
+  <main class="sec-main">
+    <!-- Welcome Section -->
+    <section class="sec-welcome glassy-card">
+      <div class="welcome-flex">
+        <h2>Welcome back, Dr. {{ doctor.full_name|default:request.user.username }}!</h2>
+        <div class="clock-card medical-style">
+          <i class="bi bi-clock-fill clock-icon"></i>
+          <div class="clock-info">
+            <div id="digital-clock" class="digital-clock"></div>
+            <div id="digital-date" class="digital-date"></div>
+          </div>
+        </div>
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <a href="{% url 'prescription:list' %}" class="action-btn" title="My Prescriptions">
+            <i class="bi bi-file-medical"></i>
+          </a>
+          <a href="{% url 'medical_archive:archive_list' %}" class="action-btn" title="My Archive">
+            <i class="bi bi-archive"></i>
+          </a>
+          <a href="{% url 'doctor:records' %}" class="action-btn" title="My Patients">
+            <i class="bi bi-people"></i>
+          </a>
+          <a href="{% url 'appointments:queue' %}" class="action-btn" title="Queue Status">
+            <i class="bi bi-list-ul"></i>
+          </a>
+          {% if today_appointments %}
+            <a href="{% url 'prescription:create' appointment_id=today_appointments.first.id %}"
+               class="action-btn" title="New Prescription">
+              <i class="bi bi-plus-circle"></i>
+            </a>
+          {% else %}
+            <button type="button"
+                    class="action-btn disabled has-tooltip"
+                    data-tooltip="No appointments available for prescription today">
+              <i class="bi bi-plus-circle"></i>
+            </button>
+          {% endif %}
+        </div>
+      </div>
+      <p class="sec-tip">
+        "Your expertise saves lives. Stay confident, stay caring."
+        <i class="bi bi-heart-pulse-fill"></i>
+      </p>
+    </section>
+
+    <!-- Dashboard Statistic Cards -->
+    <section class="sec-cards-row">
+      <div class="sec-card prescriptions glassy-card">
+        <div class="sec-card-icon prescriptions">
+          <i class="bi bi-file-medical"></i>
+        </div>
+        <div>
+          <div class="sec-card-title">Prescriptions</div>
+          <div class="sec-card-value">{{ prescription_count }}</div>
+        </div>
+      </div>
+      <div class="sec-card patients glassy-card">
+        <div class="sec-card-icon patients">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div>
+          <div class="sec-card-title">Patients</div>
+          <div class="sec-card-value">{{ patient_count }}</div>
+        </div>
+      </div>
+      <div class="sec-card recent-archives glassy-card">
+        <div class="sec-card-icon recent-archives">
+          <i class="bi bi-clock-history"></i>
+        </div>
+        <div>
+          <div class="sec-card-title">Recent Archives</div>
+          <div class="sec-card-value">{{ archives|length }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly Chart -->
+    <section class="sec-chart-row glassy-card">
+      <h3><i class="bi bi-bar-chart-line"></i> Weekly Appointments Overview</h3>
+      <canvas id="patientsWeekChart"></canvas>
+      <script id="chart-data" type="application/json">
+        {{ chart_data_json|safe }}
+      </script>
+    </section>
+
+    <!-- Latest Archives -->
+    <section class="sec-mid-row">
+      <div class="sec-today-appointments glassy-card">
+        <h3><i class="bi bi-list-task"></i> Latest Archives</h3>
+        {% if archives %}
+          <ul class="sec-appointments-list">
+            {% for item in archives %}
+              <li>
+                <div class="appt-time">{{ item.created_at|time:"H:i" }}</div>
+                <div class="appt-info">
+                  <i class="bi bi-file-medical"></i>
+                  <div class="appt-text">
+                    <span class="appt-patient">{{ item.title }}</span>
+                  </div>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="sec-no-appointments">No recent archives available.</div>
+        {% endif %}
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{% static 'js/doctor/doctor_dashboard.js' %}"></script>
+{% endblock %}

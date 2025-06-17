@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicHub Quantum Queue System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/appointments/queue_display.css' %}">
+</head>
+<body>
+    <!-- Quantum Background Elements -->
+    <div class="quantum-background">
+        <div class="quantum-pulse"></div>
+        <div class="quantum-pulse"></div>
+        <div class="quantum-orb"></div>
+    </div>
+
+    <!-- Floating Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-bell"></i>
+        <div class="notification-content">
+            <h3>System Update</h3>
+            <p>Quantum Queue System upgraded to v4.2.1</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="system-header">
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <div class="facility-name">
+                <span>ClinicHub Quantum Center</span>
+                <span>Advanced Medical Intelligence</span>
+            </div>
+        </div>
+        <div class="system-info">
+            <div class="info-item">
+                <div class="info-label">System Status</div>
+                <div class="info-value operational">Quantum Operational</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Current Time</div>
+                <div class="clock-display" id="current-time">--:--:--</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Active Doctors</div>
+                <div class="info-value" id="doctor-count">0</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="screen-title">
+            <h1>Quantum Queue Display</h1>
+            <p>Real-time patient flow visualization</p>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="control-panel">
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search doctors...">
+                </div>
+            </div>
+            <div class="view-controls">
+                <span data-department="all" class="active">All Departments</span>
+                <span data-department="cardiology">Cardiology</span>
+                <span data-department="neurology">Neurology</span>
+                <span data-department="orthopedics">Orthopedics</span>
+                <span data-department="pediatrics">Pediatrics</span>
+            </div>
+        </div>
+
+        <!-- Queue Display -->
+        <div class="queue-display">
+            <div class="display-header">
+                <h2><i class="fas fa-user-md"></i> Active Doctor Queues</h2>
+                <div class="system-message">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Live data updated: <span id="update-time">--:--</span></span>
+                </div>
+            </div>
+            <div class="queue-container" id="queue-container">
+                <!-- Cards will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="system-footer">
+        <div class="footer-content">
+            <div class="system-controls">
+                <div class="control-btn" id="settings-btn">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </div>
+                <div class="control-btn" id="reports-btn">
+                    <i class="fas fa-chart-line"></i>
+                    Reports
+                </div>
+                <div class="control-btn" id="admin-btn">
+                    <i class="fas fa-shield-alt"></i>
+                    Admin
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2025 ClinicHub Quantum System
+        </div>
+    </footer>
+
+    <!-- Django-powered API URLs for JS -->
+    <script>
+        window.QUEUE_API = "{% url 'appointments:queue_number_api' %}";
+        window.CALL_NEXT_API = "{% url 'appointments:call_next_api' doctor_id=0 %}";
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+    <script src="{% static 'js/appointments/queue_display.js' %}"></script>
+</body>
+</html>

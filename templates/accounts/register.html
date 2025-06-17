@@ -1,0 +1,39 @@
+{# templates/accounts/register.html #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/accounts/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow-lg auth-card">
+    <div class="card-content">
+      <h2 class="text-center text-primary mb-4">📝 Create Your Account</h2>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+              <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success w-100">Register</button>
+      </form>
+
+      <div class="text-center mt-3">
+        <p>Already have an account? <a href="{% url 'accounts:login' %}">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

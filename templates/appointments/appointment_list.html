@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/appointments/appointment_list.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="glass-bg-appt">
+  <svg class="glass-bg-wave" viewBox="0 0 1440 220" fill="none">
+    <path fill="url(#grad)" fill-opacity="0.16" d="M0,80 Q720,200 1440,80 V220H0Z"/>
+    <defs>
+      <linearGradient id="grad" x1="0" x2="1" y1="0" y2="1">
+        <stop offset="0%" stop-color="#53b8bb"/>
+        <stop offset="100%" stop-color="#3e60aa"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="glass-appt-card shine-anim">
+    <div class="glass-appt-header">
+      <div>
+        <h3><i class="bi bi-calendar-check"></i> Appointment List</h3>
+        <div class="glass-appt-subtitle">All booked appointments in one place</div>
+      </div>
+      <a href="{% url 'appointments:create_appointment' %}" class="glass-btn-new shine-btn">
+        <i class="bi bi-plus-circle"></i> New Appointment
+      </a>
+    </div>
+
+    <form method="get" class="g-search-form">
+      <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search patient..." class="g-search-input" />
+      <button type="submit" class="g-search-btn"><i class="bi bi-search"></i></button>
+    </form>
+
+    <div class="glass-appt-table-wrap">
+      <table class="glass-appt-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>IQD</th>
+            <th>Queue</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appt in appointments %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td><span class="g-patient"><i class="bi bi-person-circle"></i> {{ appt.patient.full_name }}</span></td>
+              <!-- Displaying doctor's full name -->
+              <td><span class="g-doctor"><i class="bi bi-person-badge"></i> {{ appt.doctor.full_name }}</span></td>
+              <td>{{ appt.scheduled_time|default:"—"|date:"Y-m-d" }}</td>
+              <td>{{ appt.scheduled_time|default:"—"|time:"h:i A" }}</td>
+              <td>{{ appt.iqd_amount|default:"0" }} IQD</td>
+              <td><span class="g-badge">{{ appt.queue_number }}</span></td>
+              <td>
+                {% if appt.status == "pending" %}
+                  <span class="g-status g-status-pending">Pending</span>
+                {% elif appt.status == "completed" %}
+                  <span class="g-status g-status-completed">Completed</span>
+                {% elif appt.status == "cancelled" %}
+                  <span class="g-status g-status-cancelled">Cancelled</span>
+                {% else %}
+                  <span class="g-status">Unknown</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{% url 'appointments:edit_appointment' appt.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+                <a href="{% url 'appointments:delete_appointment' appt.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="9" class="g-empty-row">
+                <i class="bi bi-emoji-frown"></i> No appointments available.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- 🔁 Pagination -->
+      <div class="g-pagination">
+        {% if appointments.has_previous %}
+          <a href="?q={{ request.GET.q }}&page=1" class="g-btn-pg">First</a>
+          <a href="?q={{ request.GET.q }}&page={{ appointments.previous_page_number }}" class="g-btn-pg">Previous</a>
+        {% endif %}
+
+        <span class="g-pg-info">Page {{ appointments.number }} of {{ appointments.paginator.num_pages }}</span>
+
+        {% if appointments.has_next %}
+          <a href="?q={{ request.GET.q }}&page={{ appointments.next_page_number }}" class="g-btn-pg">Next</a>
+          <a href="?q={{ request.GET.q }}&page={{ appointments.paginator.num_pages }}" class="g-btn-pg">Last</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

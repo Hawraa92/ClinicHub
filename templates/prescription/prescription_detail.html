@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/prescription/prescription_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container prescription-container colorful-style" dir="ltr" id="prescription-content">
+  <!-- 💧 Watermark -->
+  <div class="watermark">
+    <img src="{% static 'images/heart_logo.png' %}" alt="Watermark">
+  </div>
+
+  <!-- 🌈 Colorful Header -->
+  <div class="doctor-header-vibrant">
+    <div class="logo-box-rounded">
+      <img src="{% static 'images/heart_logo.png' %}" alt="Logo" class="heart-logo">
+    </div>
+    <div class="doctor-info">
+      <h2 class="doctor-name">د. {{ prescription.doctor.user.get_full_name }}</h2>
+      <p class="doctor-name-en">Dr. {{ prescription.doctor.user.get_full_name }}</p>
+      <p class="degree">M.B.Ch.B. – ABHS (Medicine)</p>
+      <p class="specialization">
+        اختصاص الأمراض القلبية والتنفسية والهضمية، الضغط، الكلى، فقر الدم، السكري، الغدة الدرقية<br>
+        Specialist in Cardiology, Respiratory, Digestive, Hypertension, Kidney, Anemia, Diabetes, Thyroid
+      </p>
+      <div class="membership">
+        <strong>⚕️ Medical Syndicate ID:</strong> {{ prescription.doctor.medical_syndicate_id|default:"—" }}<br>
+        <strong>Joined:</strong> {{ prescription.doctor.user.date_joined|date:"d/m/Y" }}
+      </div>
+    </div>
+    <div class="dna-badge">🧬</div>
+  </div>
+
+  <!-- 📝 Patient Info -->
+  <div class="info-line" dir="rtl">
+    <div><strong>👤 Name:</strong> {{ prescription.patient_full_name }}</div>
+    <div><strong>🎂 Age:</strong> {{ prescription.age }} years</div>
+    <div><strong>📅 Date:</strong> {{ prescription.date_issued|date:"Y-m-d H:i" }}</div>
+  </div>
+
+  <!-- 💊 Prescription Section -->
+  <div class="prescription-card">
+    <h5 class="text-gradient">🧾 Prescription</h5>
+    <ul class="list-unstyled">
+      {% for med in prescription.medications.all %}
+        <li class="mb-2">• {{ med.name }} — {{ med.dosage }}</li>
+      {% empty %}
+        <li class="mb-2">• No medications prescribed.</li>
+      {% endfor %}
+    </ul>
+    {% if prescription.instructions %}
+      <p><strong>📋 Instructions:</strong> {{ prescription.instructions }}</p>
+    {% endif %}
+  </div>
+
+  <hr class="my-4">
+
+  <!-- 🎧 Voice Note -->
+  {% if prescription.voice_note %}
+    <div class="audio-section d-print-none">
+      <h6>🎧 Doctor’s Voice Note:</h6>
+      <div class="custom-audio-player">
+        <audio controls>
+          <source src="{{ prescription.voice_note.url }}" type="{{ prescription.voice_note.file.content_type }}">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+    </div>
+    <hr class="my-4">
+  {% endif %}
+
+  <!-- ✍️ Signature Section -->
+  <div class="signature-area">
+    <p><strong>✍️ Signature:</strong></p>
+    {% if prescription.doctor_signature %}
+      <img src="{{ prescription.doctor_signature.url }}" alt="Doctor Signature" class="img-fluid">
+    {% else %}
+      <p class="text-muted">No signature uploaded</p>
+    {% endif %}
+  </div>
+
+  <!-- 📦 QR Code -->
+  {% if prescription.qr_code %}
+    <div class="text-center mt-4">
+      <h6 class="text-primary">🔍 Scan QR to verify this prescription</h6>
+      <img src="{{ prescription.qr_code.url }}" alt="QR Code" class="img-fluid" style="max-width: 160px;">
+    </div>
+  {% endif %}
+
+  <!-- 📞 Contact -->
+  <div class="footer-contact mt-4">
+    <p><strong>📞</strong> 07803724699</p>
+    <p><strong>📍</strong> السيدية – الشارع التجاري – ركن شارع الصناعة – مجمع خط الحياة الطبي</p>
+    <p><strong>📍</strong> Al-Saydiya – Commercial St – Al-Hayat Medical Complex</p>
+  </div>
+
+  <!-- 📅 Follow-up Note -->
+  <div class="follow-up-note text-center mt-4">
+    <p class="fw-bold text-danger">🕓 يرجى المراجعة خلال 5 أيام مع جلب الوصفة</p>
+  </div>
+
+  <!-- 🔘 Action Buttons -->
+  <div class="d-print-none text-center mt-3">
+    <button onclick="window.print()" class="btn btn-outline-primary">🖨️ Print</button>
+    <a href="{% url 'prescription:send_whatsapp' prescription.pk %}" class="btn btn-success">📤 WhatsApp</a>
+  </div>
+</div>
+{% endblock %}
