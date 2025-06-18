@@ -17,6 +17,8 @@ from decouple import config
 import dj_database_url
 
 
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,7 +30,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default='False').lower() in ('true', '1', 'yes')
+
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -88,8 +92,8 @@ WSGI_APPLICATION = 'ClinicHub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if DEBUG:
-    DATABASES = {
+
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': config('DB_NAME'),
@@ -98,10 +102,6 @@ if DEBUG:
             'HOST': config('DB_LOCALHOST'),
             'PORT': config('DB_PORT'),
         }
-    }
-else:
-    DATABASES = {
-        'default': dj_database_url.config(default=config('DATABASE_URL'), conn_max_age=600)
     }
 
 
