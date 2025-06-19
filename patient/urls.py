@@ -3,10 +3,10 @@
 from django.urls import path
 from . import views
 
-app_name = 'patients'
+app_name = 'patient'
 
 urlpatterns = [
-    path('new/', views.create_patient, name='create_patient'),       # ✅ تم التعديل هنا
+    path('new/', views.create_patient, name='create_patient'),       
     path('list/', views.patient_list, name='list'),
     path('<int:pk>/', views.patient_detail, name='detail'),
     path('<int:pk>/edit/', views.edit_patient, name='edit'),
