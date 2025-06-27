@@ -18,13 +18,13 @@ class Prescription(models.Model):
     """
     Represents a doctor's prescription linked to an appointment, with auto-generated QR code and PDF.
     """
-    appointment        = models.ForeignKey(
+    appointment = models.ForeignKey(
         Appointment,
         on_delete=models.CASCADE,
         verbose_name="Appointment",
         help_text="Related appointment from which patient info is derived"
     )
-    doctor             = models.ForeignKey(
+    doctor = models.ForeignKey(
         Doctor,
         on_delete=models.CASCADE,
         verbose_name="Doctor",
@@ -32,33 +32,62 @@ class Prescription(models.Model):
     )
 
     # Denormalized patient info from appointment
-    patient_full_name  = models.CharField(max_length=100, verbose_name="Patient Name")
-    age                = models.PositiveIntegerField(verbose_name="Patient Age")
+    patient_full_name = models.CharField(max_length=100, verbose_name="Patient Name")
+    age = models.PositiveIntegerField(verbose_name="Patient Age")
 
     # Prescription details
-    instructions       = models.TextField(blank=True, null=True, verbose_name="Additional Instructions")
-    voice_note         = models.FileField(
-        upload_to='voice_notes/', blank=True, null=True,
+    instructions = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Additional Instructions"
+    )
+    voice_note = models.FileField(
+        upload_to='voice_notes/',
+        blank=True,
+        null=True,
         verbose_name="Doctor's Voice Note"
     )
-    doctor_signature   = models.ImageField(
-        upload_to='signatures/', blank=True, null=True,
+    doctor_signature = models.ImageField(
+        upload_to='signatures/',
+        blank=True,
+        null=True,
         verbose_name="Doctor Signature"
     )
-    doctor_logo        = models.ImageField(
-        upload_to='logos/', blank=True, null=True,
+    doctor_logo = models.ImageField(
+        upload_to='logos/',
+        blank=True,
+        null=True,
         verbose_name="Clinic Logo"
     )
-    pdf_file           = models.FileField(
-        upload_to='prescriptions/', blank=True, null=True,
+    pdf_file = models.FileField(
+        upload_to='prescriptions/',
+        blank=True,
+        null=True,
         verbose_name="Prescription PDF"
     )
-
-    date_issued = models.DateTimeField(auto_now_add=True, verbose_name="Date Issued")
-
-    qr_code    = models.ImageField(
-        upload_to='qrcodes/', blank=True, null=True,
+    date_issued = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Date Issued"
+    )
+    qr_code = models.ImageField(
+        upload_to='qrcodes/',
+        blank=True,
+        null=True,
         verbose_name="QR Code"
+    )
+
+    # ➕ Added status for tracking prescription progress
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('sent', 'Sent'),
+        ('completed', 'Completed'),
+        ('canceled', 'Canceled'),
+    ]
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='draft',
+        verbose_name="Status"
     )
 
     class Meta:
@@ -93,7 +122,6 @@ class Prescription(models.Model):
         """
         On save, copy patient info from appointment and generate QR code if this is a new record.
         """
-        # Copy patient details
         if self.appointment:
             self.patient_full_name = self.appointment.patient.full_name
             self.age = self.appointment.patient.age
@@ -101,7 +129,6 @@ class Prescription(models.Model):
         is_new = self.pk is None
         super().save(*args, **kwargs)
 
-        # Generate QR code only once on creation
         if is_new and not self.qr_code:
             self.generate_qr_code()
             super().save(update_fields=['qr_code'])
@@ -122,7 +149,7 @@ class Medication(models.Model):
         related_name='medications',
         on_delete=models.CASCADE
     )
-    name   = models.CharField(max_length=200, verbose_name="Medication Name")
+    name = models.CharField(max_length=200, verbose_name="Medication Name")
     dosage = models.CharField(max_length=255, verbose_name="Dosage")
 
     def __str__(self):

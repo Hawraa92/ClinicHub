@@ -30,13 +30,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default='False').lower() in ('true', '1', 'yes')
+# DEBUG = config('DEBUG', default='False').lower() in ('true', '1', 'yes')
 
-# DEBUG = True  #محلي
+DEBUG = True  #محلي
 
 
-# ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
 
 
@@ -188,8 +188,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Email settings (for Password Reset)
 # ----------------------------------------
 # During development, print emails to console:
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'no-reply@clinichub.local'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# DEFAULT_FROM_EMAIL = 'no-reply@clinichub.local'
+# ADMIN_EMAIL = 'hawra92925@gmail.com'
+
+
+# لإرسال رسائل حقيقية عبر Gmail SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST      = 'smtp.gmail.com'
+EMAIL_PORT      = 587
+EMAIL_USE_TLS   = True
+
+# هذه القيم اجعليها في ملف .env
+EMAIL_HOST_USER     = config('EMAIL_HOST_USER')      # بريد Gmail (full address)
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  # كلمة سر التطبيق (App Password)
+
+# من ومن إليه
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+ADMIN_EMAIL        = 'hawra92925@gmail.com'
+
+
+
+
+
+
 
 # To use actual SMTP in production, uncomment and configure:
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -265,7 +287,7 @@ JAZZMIN_UI_TWEAKS = {
 
     "rounded_corners": True,
     "hover_effects": True,
-    "dark_mode_theme": None,  # أو "cyborg" إذا تحبين الوضع الليلي
+    "dark_mode_theme": None,  
 }
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

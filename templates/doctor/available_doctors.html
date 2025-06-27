@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/doctor/available_doctors.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<section class="available-doctors-section">
+  <div class="container">
+    <h2 class="section-title">Available <span class="highlight">Doctors</span></h2>
+    <p class="section-subtitle">Choose from our top medical professionals</p>
+
+    <div class="doctor-cards-grid">
+      {% for doctor in doctors %}
+      <div class="doctor-card">
+        <div class="doctor-image">
+          {% if doctor.photo %}
+            <img src="{{ doctor.photo.url }}" alt="Dr. {{ doctor.full_name }}">
+          {% else %}
+            <img src="{% static 'img/default-doctor.png' %}" alt="Doctor Profile">
+          {% endif %}
+        </div>
+        <div class="doctor-info">
+          <h3>Dr. {{ doctor.full_name }}</h3>
+          <p class="specialty">{{ doctor.specialty }}</p>
+          
+          {% if doctor.short_bio %}
+          <p class="bio">{{ doctor.short_bio }}</p>
+          {% endif %}
+
+          {% if doctor.consultation_fee %}
+          <p class="fee"><strong>Fee:</strong> {{ doctor.consultation_fee }} IQD</p>
+          {% endif %}
+
+          <p class="rating">⭐ {{ doctor.rating|default:"5.0" }}</p>
+
+          <!-- ✅ Book Now button redirects to appointment form with doctor.id -->
+          <a href="{% url 'appointments:book_from_doctor' doctor.id %}" class="book-btn">Book Now</a>
+        </div>
+      </div>
+      {% empty %}
+      <p class="no-doctors">No doctors are currently available.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

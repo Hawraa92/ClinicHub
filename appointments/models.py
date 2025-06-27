@@ -1,3 +1,5 @@
+# appointments/models.py
+
 from django.db import models, transaction
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -88,10 +90,6 @@ class Appointment(models.Model):
         ]
 
     def clean(self):
-        """
-        Prevent double-booking for the same doctor at the same time,
-        and prevent negative payment values.
-        """
         if self.scheduled_time:
             conflict = Appointment.objects.exclude(pk=self.pk).filter(
                 doctor=self.doctor,
@@ -99,14 +97,10 @@ class Appointment(models.Model):
             )
             if conflict.exists():
                 raise ValidationError("This time slot is already booked for this doctor.")
-
         if self.iqd_amount is not None and self.iqd_amount < 0:
             raise ValidationError("IQD amount cannot be negative.")
 
     def save(self, *args, **kwargs):
-        """
-        Assign queue number automatically and validate.
-        """
         if not self.pk and self.scheduled_time:
             appointment_date = self.scheduled_time.date()
             with transaction.atomic():
@@ -121,10 +115,8 @@ class Appointment(models.Model):
                     .count()
                 )
                 self.queue_number = today_count + 1
-
         if self.iqd_amount is None:
             self.iqd_amount = 0
-
         self.full_clean()
         super().save(*args, **kwargs)
 
@@ -132,3 +124,72 @@ class Appointment(models.Model):
         patient_name = getattr(self.patient, 'full_name', str(self.patient))
         doctor_name = getattr(self.doctor.user, 'get_full_name', lambda: str(self.doctor.user))()
         return f"{patient_name} → Dr. {doctor_name} (#{self.queue_number}) | {self.iqd_amount:,} IQD"
+
+
+class PatientBookingRequest(models.Model):
+    """
+    Represents a booking request from a public patient (non-registered).
+    Used in public-facing booking form.
+    """
+    full_name = models.CharField(max_length=100, verbose_name="Full Name")
+    date_of_birth = models.DateField(verbose_name="Date of Birth")
+    contact_info = models.CharField(max_length=200, verbose_name="Contact Information")
+
+    doctor = models.ForeignKey(
+        Doctor,
+        on_delete=models.CASCADE,
+        verbose_name="Requested Doctor",
+        help_text="Doctor the patient wants to consult"
+    )
+
+    scheduled_time = models.DateTimeField(verbose_name="Requested Time")
+
+    submitted_at = models.DateTimeField(auto_now_add=True, verbose_name="Submitted At")
+
+    status = models.CharField(
+        max_length=20,
+        choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('rejected', 'Rejected')],
+        default='pending',
+        verbose_name="Status"
+    )
+
+    def __str__(self):
+        return f"{self.full_name} → Dr. {self.doctor.user.get_full_name()} on {self.scheduled_time.strftime('%Y-%m-%d %I:%M %p')}"
+
+    def save(self, *args, **kwargs):
+        creating = self.pk is None
+        super().save(*args, **kwargs)
+        if creating:
+            Notification.objects.create(
+                title='New Patient Booking',
+                message=f"{self.full_name} requested an appointment with Dr. {self.doctor.user.get_full_name()} on {self.scheduled_time:%Y-%m-%d %I:%M %p}.",
+                related_booking_request=self
+            )
+
+
+class Notification(models.Model):
+    """
+    Notification for the secretary to review new public booking requests.
+    """
+    title = models.CharField(max_length=200, verbose_name="Title")
+    message = models.TextField(verbose_name="Message")
+    is_read = models.BooleanField(default=False, verbose_name="Read Status")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created At")
+
+    # Link to the public booking request if applicable
+    related_booking_request = models.ForeignKey(
+        PatientBookingRequest,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='notifications',
+        verbose_name="Related Booking Request"
+    )
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
+
+    def __str__(self):
+        return f"{self.title} - {'Read' if self.is_read else 'Unread'}"

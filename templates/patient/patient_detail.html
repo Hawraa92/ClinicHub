@@ -1,81 +1,358 @@
 {% extends "base.html" %}
 {% load static %}
+{% load group_filters %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/patient/patient_detail.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/patient/patient_detail.js' %}" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="card shadow-lg p-4">
-    <h2 class="text-primary mb-3">🧾 Patient Details</h2>
+<div class="glass-container">
+  <div class="patient-detail-card">
+    <!-- Header -->
+    <div class="pd-header">
+      <div class="pd-avatar">
+        {% if patient.photo %}
+          <img src="{{ patient.photo.url }}" alt="{{ patient.full_name }}">
+        {% else %}
+          <i class="fas fa-user-injured"></i>
+        {% endif %}
+        <div class="status-indicator {{ patient.diabetes_prediction|default:'pending'|lower }}"></div>
+      </div>
+      <div class="pd-header-info">
+        <h1>{{ patient.full_name }}</h1>
+        <div class="pd-meta">
+          <span class="pd-record-id">Record #{{ patient.id }}</span>
+          <span class="pd-age">{{ patient.age }} years</span>
+          <span class="pd-gender">{{ patient.get_gender_display }}</span>
+        </div>
+      </div>
+      <div class="pd-prediction">
+        {% if patient.diabetes_prediction == "Positive" %}
+          <span class="pd-badge pd-badge-pos" id="predictionBadge">
+            <i class="fas fa-vial"></i> Positive Prediction
+          </span>
+        {% elif patient.diabetes_prediction == "Negative" %}
+          <span class="pd-badge pd-badge-neg" id="predictionBadge">
+            <i class="fas fa-vial"></i> Negative Prediction
+          </span>
+        {% else %}
+          <span class="pd-badge pd-badge-pending" id="predictionBadge">
+            <i class="fas fa-vial"></i> Pending Prediction
+          </span>
+        {% endif %}
+      </div>
+    </div>
 
-    <dl class="row">
-      <dt class="col-sm-3">Full Name:</dt>
-      <dd class="col-sm-9">{{ patient.full_name }}</dd>
+    {% if request.user|has_group:"Doctors" %}
+    <div class="pd-info-grid">
+      <!-- Personal Info Card -->
+      <div class="pd-card glow-hover">
+        <div class="pd-section-title">
+          <i class="fas fa-id-card"></i> Personal Information
+        </div>
+        <div class="pd-info-row">
+          <span>Full Name</span>
+          <span class="highlight">{{ patient.full_name }}</span>
+        </div>
+        <div class="pd-info-row">
+          <span>Date of Birth</span>
+          <span>{{ patient.date_of_birth|date:"M d, Y" }}</span>
+        </div>
+        <div class="pd-info-row">
+          <span>Gender</span>
+          <span>{{ patient.get_gender_display }}</span>
+        </div>
+        <div class="pd-info-row">
+          <span>Address</span>
+          <span>{{ patient.address|default:"—" }}</span>
+        </div>
+      </div>
 
-      <dt class="col-sm-3">Date of Birth:</dt>
-      <dd class="col-sm-9">{{ patient.date_of_birth }} ({{ patient.age }} years old)</dd>
+      <!-- Contact Card -->
+      <div class="pd-card glow-hover">
+        <div class="pd-section-title">
+          <i class="fas fa-mobile-alt"></i> Contact Information
+        </div>
+        <div class="pd-info-row">
+          <span>Mobile</span>
+          <a href="tel:{{ patient.mobile }}" class="contact-link">
+            {{ patient.mobile|default:"—" }}
+          </a>
+        </div>
+        <div class="pd-info-row">
+          <span>Email</span>
+          <a href="mailto:{{ patient.email }}" class="contact-link">
+            {{ patient.email|default:"—" }}
+          </a>
+        </div>
+        <div class="pd-info-row">
+          <span>Emergency Contact</span>
+          <span>{{ patient.emergency_contact|default:"—" }}</span>
+        </div>
+      </div>
 
-      <dt class="col-sm-3">Address:</dt>
-      <dd class="col-sm-9">{{ patient.address }}</dd>
+      <!-- Medical History Card -->
+      <div class="pd-card glow-hover">
+        <div class="pd-section-title">
+          <i class="fas fa-notes-medical"></i> Medical History
+        </div>
+        <div class="history-item">
+          <div class="history-label">Past Medical History</div>
+          <div class="history-content">{{ patient.past_medical_history|default:"—" }}</div>
+        </div>
+        <div class="history-item">
+          <div class="history-label">Drug History</div>
+          <div class="history-content">{{ patient.drug_history|default:"—" }}</div>
+        </div>
+        <div class="history-item">
+          <div class="history-label">Smoking History</div>
+          <div class="history-content">{{ patient.smoking_history|default:"—" }}</div>
+        </div>
+        <div class="history-item">
+          <div class="history-label">Family History</div>
+          <div class="history-content">{{ patient.family_history|default:"—" }}</div>
+        </div>
+      </div>
 
-      {% if request.user.groups.first.name == "Doctors" %}
-        <dt class="col-sm-3">Gender:</dt>
-        <dd class="col-sm-9">{{ patient.get_gender_display }}</dd>
+      <!-- Health Metrics Card -->
+      <div class="pd-card metrics-card glow-hover">
+        <div class="pd-section-title">
+          <i class="fas fa-heartbeat"></i> Health Metrics
+          <div class="metrics-timestamp">Last updated: {% now "M d, Y" %}</div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <div class="metric-value">{{ patient.bmi|default:"—" }}</div>
+            <div class="metric-label">BMI</div>
+            <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 2%</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-value">{{ patient.hbA1c_level|default:"—" }}%</div>
+            <div class="metric-label">HbA1c</div>
+            <div class="metric-trend down"><i class="fas fa-arrow-down"></i> 0.5%</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-value">{{ patient.blood_glucose_level|default:"—" }} mg/dL</div>
+            <div class="metric-label">Glucose</div>
+            <div class="metric-trend stable"><i class="fas fa-minus"></i></div>
+          </div>
+        </div>
+        <div class="metric-chart">
+          <canvas id="healthMetricsChart"></canvas>
+        </div>
+      </div>
 
-        <dt class="col-sm-3">Mobile:</dt>
-        <dd class="col-sm-9">{{ patient.mobile }}</dd>
+      <!-- Conditions Card -->
+      <div class="pd-card conditions-card glow-hover">
+        <div class="pd-section-title">
+          <i class="fas fa-clipboard-check"></i> Health Conditions
+        </div>
+        <div class="condition-grid">
+          <div class="condition-item {% if patient.hypertension %}active{% endif %}" data-tooltip="Diagnosed on Jan 12, 2023">
+            <i class="fas fa-heartbeat"></i>
+            <span>Hypertension</span>
+            <div class="condition-status"></div>
+          </div>
+          <div class="condition-item {% if patient.heart_disease %}active{% endif %}" data-tooltip="No history reported">
+            <i class="fas fa-heart"></i>
+            <span>Heart Disease</span>
+            <div class="condition-status"></div>
+          </div>
+          <div class="condition-item active" data-tooltip="Prediabetes identified">
+            <i class="fas fa-vial"></i>
+            <span>Prediabetes</span>
+            <div class="condition-status"></div>
+          </div>
+          <div class="condition-item" data-tooltip="No history reported">
+            <i class="fas fa-lungs"></i>
+            <span>Asthma</span>
+            <div class="condition-status"></div>
+          </div>
+          <div class="condition-item" data-tooltip="Family history present">
+            <i class="fas fa-dna"></i>
+            <span>Genetic Risk</span>
+            <div class="condition-status"></div>
+          </div>
+          <div class="condition-item">
+            <i class="fas fa-running"></i>
+            <span>{{ patient.physical_activity|default:"Low" }} Activity</span>
+          </div>
+        </div>
+      </div>
 
-        <dt class="col-sm-3">Email:</dt>
-        <dd class="col-sm-9">{{ patient.email }}</dd>
+      <!-- Clinical Notes Card -->
+      <div class="pd-card notes-card glow-hover">
+        <div class="pd-section-title">
+          <i class="fas fa-sticky-note"></i> Clinical Notes
+        </div>
+        <div class="notes-content">
+          {{ patient.clinical_notes|default:"No clinical notes available" }}
+        </div>
+        <div class="notes-actions">
+          <button class="note-action-btn" id="addNoteBtn">
+            <i class="fas fa-plus"></i> Add Note
+          </button>
+          <button class="note-action-btn" id="viewHistoryBtn">
+            <i class="fas fa-history"></i> History
+          </button>
+          <button class="note-action-btn" id="attachFileBtn">
+            <i class="fas fa-paperclip"></i> Attach
+          </button>
+        </div>
+      </div>
+    </div>
 
-        <dt class="col-sm-3">Past Medical History:</dt>
-        <dd class="col-sm-9">{{ patient.past_medical_history }}</dd>
+    <!-- Actions -->
+    <div class="pd-actions">
+      <a href="{% url 'patient:edit' patient.pk %}" class="pd-btn pd-btn-edit">
+        <i class="fas fa-edit"></i> Edit Record
+      </a>
+      <button class="pd-btn pd-btn-report" id="generateReportBtn">
+        <i class="fas fa-file-pdf"></i> Generate Report
+      </button>
+      <button class="pd-btn pd-btn-share" id="shareRecordBtn">
+        <i class="fas fa-share-alt"></i> Share
+      </button>
+      <a href="{% url 'patient:list' %}" class="pd-btn pd-btn-back">
+        <i class="fas fa-arrow-left"></i> Back to List
+      </a>
+    </div>
+    {% else %}
+    <div class="pd-access-denied">
+      <i class="fas fa-ban"></i>
+      <h2>Access Denied</h2>
+      <p>You don't have permission to view this record.</p>
+      <a href="{% url 'home' %}" class="pd-btn pd-btn-back">
+        <i class="fas fa-home"></i> Return Home
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
 
-        <dt class="col-sm-3">Drug History:</dt>
-        <dd class="col-sm-9">{{ patient.drug_history }}</dd>
-
-        <dt class="col-sm-3">Investigations:</dt>
-        <dd class="col-sm-9">{{ patient.investigations }}</dd>
-
-        <dt class="col-sm-3">BMI:</dt>
-        <dd class="col-sm-9">{{ patient.bmi }}</dd>
-
-        <dt class="col-sm-3">HbA1c Level:</dt>
-        <dd class="col-sm-9">{{ patient.hbA1c_level }}</dd>
-
-        <dt class="col-sm-3">Blood Glucose Level:</dt>
-        <dd class="col-sm-9">{{ patient.blood_glucose_level }}</dd>
-
-        <dt class="col-sm-3">Hypertension:</dt>
-        <dd class="col-sm-9">{{ patient.hypertension|yesno:"Yes,No" }}</dd>
-
-        <dt class="col-sm-3">Heart Disease:</dt>
-        <dd class="col-sm-9">{{ patient.heart_disease|yesno:"Yes,No" }}</dd>
-
-        <dt class="col-sm-3">Smoking History:</dt>
-        <dd class="col-sm-9">{{ patient.smoking_history }}</dd>
-
-        <dt class="col-sm-3">Race:</dt>
-        <dd class="col-sm-9">{{ patient.race }}</dd>
-
-        <dt class="col-sm-3">Diabetes Prediction:</dt>
-        <dd class="col-sm-9">
-          {% if patient.diabetes_prediction == "Positive" %}
-            <span class="badge bg-danger">Positive</span>
-          {% elif patient.diabetes_prediction == "Negative" %}
-            <span class="badge bg-success">Negative</span>
-          {% else %}
-            <span class="badge bg-secondary">Pending</span>
-          {% endif %}
-        </dd>
-
-        <dt class="col-sm-3">Clinical Notes:</dt>
-        <dd class="col-sm-9">{{ patient.clinical_notes }}</dd>
-      {% endif %}
-    </dl>
-
-    <div class="text-end mt-3">
-      <a href="{% url 'patients:edit' patient.pk %}" class="btn btn-warning">✏ Edit</a>
-      <a href="{% url 'patients:list' %}" class="btn btn-secondary">← Back to List</a>
+<!-- Prediction Modal -->
+<div id="predictionModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Diabetes Prediction Analysis</h3>
+    <div class="modal-body">
+      <div class="prediction-summary">
+        <div class="prediction-status {{ patient.diabetes_prediction|default:'pending'|lower }}">
+          {{ patient.diabetes_prediction|default:"Pending" }}
+        </div>
+        <div class="confidence-gauge">
+          <div class="gauge-container">
+            <div class="gauge-background"></div>
+            <div class="gauge-fill" style="transform: rotate({{ confidence_angle }}deg)"></div>
+            <div class="gauge-center"></div>
+            <div class="gauge-value">{{ confidence }}%</div>
+          </div>
+          <p class="confidence-label">Algorithm Confidence</p>
+        </div>
+      </div>
+      
+      <div class="prediction-factors">
+        <h4>Key Contributing Factors:</h4>
+        <ul>
+          <li>HbA1c level: {{ patient.hbA1c_level|default:"N/A" }}%</li>
+          <li>BMI: {{ patient.bmi|default:"N/A" }}</li>
+          <li>Family history: {{ patient.family_history|default:"None" }}</li>
+          <li>Hypertension: {% if patient.hypertension %}Yes{% else %}No{% endif %}</li>
+        </ul>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="modal-btn" id="viewAnalysisBtn">
+          <i class="fas fa-chart-line"></i> View Full Analysis
+        </button>
+        <button class="modal-btn secondary" id="requestReevaluationBtn">
+          <i class="fas fa-sync-alt"></i> Request Re-evaluation
+        </button>
+        <button class="modal-btn" id="downloadReportBtn">
+          <i class="fas fa-download"></i> Download Report
+        </button>
+      </div>
     </div>
   </div>
+</div>
+
+<!-- Add Note Modal -->
+<div id="addNoteModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Add Clinical Note</h3>
+    <div class="modal-body">
+      <form id="clinicalNoteForm">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="noteDate">Date</label>
+          <input type="date" id="noteDate" value="{% now 'Y-m-d' %}">
+        </div>
+        <div class="form-group">
+          <label for="noteCategory">Category</label>
+          <select id="noteCategory">
+            <option>Assessment</option>
+            <option>Treatment Plan</option>
+            <option>Progress Note</option>
+            <option>Lab Results</option>
+            <option>Patient Feedback</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="noteContent">Note</label>
+          <textarea id="noteContent" rows="6" placeholder="Enter clinical notes..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="urgentFlag"> Mark as Urgent
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="modal-btn secondary" id="cancelNoteBtn">Cancel</button>
+          <button type="submit" class="modal-btn">Save Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Note History Modal -->
+<div id="historyModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Clinical Notes History</h3>
+    <div class="modal-body">
+      <div class="history-filters">
+        <input type="text" placeholder="Search notes..." id="noteSearch">
+        <select id="noteFilter">
+          <option>All Categories</option>
+          <option>Assessment</option>
+          <option>Treatment Plan</option>
+          <option>Progress Note</option>
+        </select>
+      </div>
+      
+      <div class="notes-timeline">
+        <!-- Timeline items would be dynamically populated -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Report Generation Toast -->
+<div id="reportToast" class="toast">
+  <div class="toast-content">
+    <i class="fas fa-check-circle"></i>
+    <div class="toast-message">Report generated successfully!</div>
+  </div>
+  <div class="toast-progress"></div>
 </div>
 {% endblock %}

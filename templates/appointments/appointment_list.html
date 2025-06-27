@@ -31,7 +31,8 @@
     </div>
 
     <form method="get" class="g-search-form">
-      <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search patient..." class="g-search-input" />
+      <input type="text" name="q" value="{{ search_query }}" placeholder="Search patient..." class="g-search-input" />
+      <input type="hidden" name="sort" value="{{ current_sort }}" />
       <button type="submit" class="g-search-btn"><i class="bi bi-search"></i></button>
     </form>
 
@@ -42,6 +43,7 @@
             <th>#</th>
             <th>Patient</th>
             <th>Doctor</th>
+            <th>Source</th>
             <th>Date</th>
             <th>Time</th>
             <th>IQD</th>
@@ -54,11 +56,35 @@
           {% for appt in appointments %}
             <tr>
               <td>{{ forloop.counter }}</td>
-              <td><span class="g-patient"><i class="bi bi-person-circle"></i> {{ appt.patient.full_name }}</span></td>
-              <!-- Displaying doctor's full name -->
-              <td><span class="g-doctor"><i class="bi bi-person-badge"></i> {{ appt.doctor.full_name }}</span></td>
-              <td>{{ appt.scheduled_time|default:"—"|date:"Y-m-d" }}</td>
-              <td>{{ appt.scheduled_time|default:"—"|time:"h:i A" }}</td>
+              <td>
+                <span class="g-patient">
+                  <i class="bi bi-person-circle"></i>
+                  {{ appt.patient.full_name }}
+                </span>
+              </td>
+              <td>
+                <span class="g-doctor">
+                  <i class="bi bi-person-badge"></i>
+                  {{ appt.doctor.full_name }}
+                </span>
+              </td>
+              <td>
+                <span class="g-source">{{ appt.source|capfirst }}</span>
+              </td>
+              <td>
+                {% if appt.scheduled_time %}
+                  {{ appt.scheduled_time|date:"Y-m-d" }}
+                {% else %}
+                  &mdash;
+                {% endif %}
+              </td>
+              <td>
+                {% if appt.scheduled_time %}
+                  {{ appt.scheduled_time|date:"h:i A" }}
+                {% else %}
+                  &mdash;
+                {% endif %}
+              </td>
               <td>{{ appt.iqd_amount|default:"0" }} IQD</td>
               <td><span class="g-badge">{{ appt.queue_number }}</span></td>
               <td>
@@ -83,7 +109,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="9" class="g-empty-row">
+              <td colspan="10" class="g-empty-row">
                 <i class="bi bi-emoji-frown"></i> No appointments available.
               </td>
             </tr>
@@ -91,18 +117,20 @@
         </tbody>
       </table>
 
-      <!-- 🔁 Pagination -->
+      <!-- Pagination -->
       <div class="g-pagination">
         {% if appointments.has_previous %}
-          <a href="?q={{ request.GET.q }}&page=1" class="g-btn-pg">First</a>
-          <a href="?q={{ request.GET.q }}&page={{ appointments.previous_page_number }}" class="g-btn-pg">Previous</a>
+          <a href="?q={{ search_query }}&sort={{ current_sort }}&page=1" class="g-btn-pg">First</a>
+          <a href="?q={{ search_query }}&sort={{ current_sort }}&page={{ appointments.previous_page_number }}" class="g-btn-pg">Previous</a>
         {% endif %}
 
-        <span class="g-pg-info">Page {{ appointments.number }} of {{ appointments.paginator.num_pages }}</span>
+        <span class="g-pg-info">
+          Page {{ appointments.number }} of {{ appointments.paginator.num_pages }}
+        </span>
 
         {% if appointments.has_next %}
-          <a href="?q={{ request.GET.q }}&page={{ appointments.next_page_number }}" class="g-btn-pg">Next</a>
-          <a href="?q={{ request.GET.q }}&page={{ appointments.paginator.num_pages }}" class="g-btn-pg">Last</a>
+          <a href="?q={{ search_query }}&sort={{ current_sort }}&page={{ appointments.next_page_number }}" class="g-btn-pg">Next</a>
+          <a href="?q={{ search_query }}&sort={{ current_sort }}&page={{ appointments.paginator.num_pages }}" class="g-btn-pg">Last</a>
         {% endif %}
       </div>
     </div>

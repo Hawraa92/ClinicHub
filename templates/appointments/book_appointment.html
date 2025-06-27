@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Appointment | ClinicHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/appointments/book_appointment.css' %}">
+</head>
+<body class="booking-page">
+
+  <div class="booking-container">
+    <div class="booking-card">
+      <h2 class="title">
+        <i class="fas fa-calendar-check"></i> Book an Appointment
+      </h2>
+
+      {% if messages %}
+      <div class="messages">
+        {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <!-- 1) Doctor SELECT (مخفي) -->
+        <div class="form-group" style="display:none;">
+          {{ form.doctor.label_tag }}
+          {{ form.doctor }}
+        </div>
+
+        <!-- 2) Doctor Read-Only -->
+        <div class="form-group">
+          <label for="id_doctor_readonly">Doctor</label>
+          <input
+            type="text"
+            id="id_doctor_readonly"
+            class="form-control"
+            placeholder="Loading doctor…"
+            readonly
+          >
+        </div>
+
+        <!-- Preferred Time -->
+        <div class="form-group">
+          {{ form.scheduled_time.label_tag }}
+          {{ form.scheduled_time }}
+        </div>
+
+        <!-- Patient Full Name -->
+        <div class="form-group">
+          {{ form.full_name.label_tag }}
+          {{ form.full_name }}
+        </div>
+
+        <!-- Patient Phone -->
+        <div class="form-group">
+          {{ form.contact_info.label_tag }}
+          {{ form.contact_info }}
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="form-group">
+          {{ form.date_of_birth.label_tag }}
+          {{ form.date_of_birth }}
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-paper-plane"></i> Submit Appointment
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JS: يقرأ doctor_name من الـ URL، يفعّل الخيار ويعرض الاسم -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      const doctorName = params.get('doctor_name');
+      const select = document.getElementById('id_doctor');
+      const readonly = document.getElementById('id_doctor_readonly');
+
+      if (doctorName && select && readonly) {
+        // 1) فعل الخيار المطابق في select
+        for (let opt of select.options) {
+          if (opt.textContent.trim() === doctorName.trim()) {
+            opt.selected = true;
+            break;
+          }
+        }
+        // 2) انسخ الاسم في حقل الـ Read-Only
+        readonly.value = doctorName;
+      } else {
+        readonly.value = '—';
+      }
+    });
+  </script>
+</body>
+</html>

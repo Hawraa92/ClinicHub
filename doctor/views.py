@@ -5,12 +5,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.utils.timezone import now
+from django.views.decorators.http import require_GET
 from datetime import timedelta
 import json
 
 from .models import Doctor
 from medical_archive.models import PatientArchive
-from prescription.models import Prescription  # ✅ مضاف حديثاً
+from prescription.models import Prescription
 from patient.models import Patient
 from appointments.models import Appointment
 
@@ -19,11 +20,11 @@ User = get_user_model()
 @login_required
 def dashboard_view(request):
     """
-    Render the doctor's dashboard showing recent archives, prescriptions, counts, and key metrics.
+    Render the doctor's dashboard showing recent archives, prescriptions,
+    statistics, and key metrics.
     """
     user = request.user
 
-    # ✅ Ensure this user is a doctor
     try:
         doctor = Doctor.objects.get(user=user)
     except Doctor.DoesNotExist:
@@ -31,30 +32,24 @@ def dashboard_view(request):
 
     today = now().date()
 
-    # ✅ Fetch the latest 5 archives created by this doctor
+    # Recent archives (limit to 5)
     archives = PatientArchive.objects.filter(doctor=doctor).order_by('-created_at')[:5]
 
-    # ✅ Stats
+    # Stats
     archive_count = PatientArchive.objects.filter(doctor=doctor).count()
-    prescription_count = Prescription.objects.filter(doctor=doctor).count()  # ✅ مضاف حديثاً
-
-    patient_count = Patient.objects.filter(
-        appointment__doctor=doctor
-    ).distinct().count()
-
+    prescription_count = Prescription.objects.filter(doctor=doctor).count()
+    patient_count = Patient.objects.filter(appointment__doctor=doctor).distinct().count()
     patients_today = Patient.objects.filter(
         appointment__doctor=doctor,
         appointment__scheduled_time__date=today
     ).distinct().count()
-
     appointments_today = Appointment.objects.filter(
         doctor=doctor,
         scheduled_time__date=today
     ).count()
-
     new_patients_today = Patient.objects.filter(created_at__date=today).count()
 
-    # ✅ Weekly chart data
+    # Weekly chart data (past 7 days)
     chart_labels = []
     chart_data = []
     for i in range(6, -1, -1):
@@ -71,7 +66,7 @@ def dashboard_view(request):
         'data': chart_data
     })
 
-    # ✅ Today's appointments
+    # Today's appointments
     today_appointments = Appointment.objects.filter(
         doctor=doctor,
         scheduled_time__date=today
@@ -81,7 +76,7 @@ def dashboard_view(request):
         'doctor': doctor,
         'archives': archives,
         'archive_count': archive_count,
-        'prescription_count': prescription_count,  # ✅ مضاف حديثاً
+        'prescription_count': prescription_count,
         'patient_count': patient_count,
         'stats': {
             'patients_today': patients_today,
@@ -89,7 +84,7 @@ def dashboard_view(request):
             'new_patients_today': new_patients_today,
         },
         'chart_data_json': chart_data_json,
-        'today_appointments': today_appointments
+        'today_appointments': today_appointments,
     }
 
     return render(request, 'doctor/doctor_dashboard.html', context)
@@ -98,7 +93,7 @@ def dashboard_view(request):
 @login_required
 def doctor_dashboard(request):
     """
-    Display the list of all patients and their medical data.
+    Display the list of all patients related to the logged-in doctor.
     """
     if getattr(request.user, 'role', None) != 'doctor':
         raise PermissionDenied("Access restricted to doctors only.")
@@ -113,4 +108,15 @@ def doctor_dashboard(request):
     return render(request, 'doctor/patient_records.html', {
         'patients': patients,
         'doctor': doctor,
+    })
+
+
+@require_GET
+def available_doctors_list(request):
+    """
+    Public view to display all doctors who are currently available for booking.
+    """
+    doctors = Doctor.objects.filter(available=True).order_by('full_name')
+    return render(request, 'doctor/available_doctors.html', {
+        'doctors': doctors
     })

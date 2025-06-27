@@ -2,7 +2,7 @@
    Enhanced Auth Forms Styling (auth.css)
    ===================================== */
 
-/* ---------- Global Font & Reset ---------- */
+/* ---------- Global Reset ---------- */
 * {
   margin: 0;
   padding: 0;
@@ -13,22 +13,22 @@ body {
   font-family: 'Inter', sans-serif;
   background: #f0f4f8;
   color: #333;
+  line-height: 1.5;
 }
 
 /* ---------- Auth Card Container ---------- */
 .auth-card {
-  width: 100%;
-  max-width: 450px;
-  margin: 2rem auto;
-  background: #ffffff;
+  width: 90%;
+  max-width: 400px;
+  margin: 3rem auto;
+  background: #fff;
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   position: relative;
-  z-index: 1;
 }
 
-/* Add a subtle top accent bar */
+/* Top accent bar */
 .auth-card::before {
   content: '';
   display: block;
@@ -40,27 +40,26 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 2;
 }
 
-/* ---------- Card Padding & Layout ---------- */
+/* ---------- Card Inner Padding ---------- */
 .auth-card .card-content {
   padding: 2.5rem 2rem 1.5rem;
 }
 
-/* Centered heading with decorative underline */
+/* ---------- Heading ---------- */
 .auth-card h2 {
   font-size: 1.75rem;
   font-weight: 700;
   color: #0d3b66;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   position: relative;
 }
 
 .auth-card h2::after {
   content: '';
-  width: 60px;
+  width: 50px;
   height: 4px;
   background: #38b6ff;
   display: block;
@@ -68,20 +67,24 @@ body {
   border-radius: 2px;
 }
 
-/* ---------- Form Labels & Inputs ---------- */
+/* ---------- Form Elements ---------- */
+.auth-card .form-group {
+  margin-bottom: 1.25rem;
+}
+
 .auth-card .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
   font-weight: 500;
   color: #4b4b4b;
-  margin-bottom: 0.25rem;
-  display: block;
 }
 
 .auth-card .form-control {
   width: 100%;
-  border: 1px solid #ced4da;
-  border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -91,17 +94,19 @@ body {
   outline: none;
 }
 
-/* Textarea or select if present */
 .auth-card textarea.form-control,
 .auth-card select.form-select {
-  border-radius: 0.5rem;
   padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
   font-size: 1rem;
 }
 
-/* Spacing between form groups */
-.auth-card .form-group {
-  margin-bottom: 1.25rem;
+/* “Forgot password?” */
+.auth-card .forgot-password {
+  display: block;
+  text-align: right;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
 }
 
 /* ---------- Buttons ---------- */
@@ -141,16 +146,10 @@ body {
   transform: translateY(-1px);
 }
 
-.auth-card .btn-success:active {
-  background: #339b82;
-  transform: translateY(0);
-}
-
-/* ---------- Links & Text Helpers ---------- */
+/* ---------- Links & Helpers ---------- */
 .auth-card a {
   color: #38b6ff;
   text-decoration: none;
-  font-weight: 500;
   transition: color 0.2s;
 }
 
@@ -159,15 +158,6 @@ body {
   text-decoration: underline;
 }
 
-/* “Forgot password?” link alignment */
-.auth-card .forgot-password {
-  display: block;
-  text-align: right;
-  font-size: 0.9rem;
-  margin-bottom: 1.25rem;
-}
-
-/* ---------- Error & Help Text ---------- */
 .auth-card .form-text {
   font-size: 0.875rem;
   color: #6c757d;
@@ -178,28 +168,34 @@ body {
   margin-top: 0.25rem;
 }
 
-/* “Already have an account?” section */
-.auth-card .text-center.mt-3 p {
-  font-size: 0.9rem;
-  color: #5a5a5a;
+/* “Already have an account?” */
+.auth-card .card-footer {
+  padding: 1rem 2rem;
+  background: #fafafa;
+  text-align: center;
+  border-top: 1px solid #ececec;
 }
 
-.auth-card .text-center.mt-3 a {
+.auth-card .card-footer p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.auth-card .card-footer a {
   font-weight: 600;
 }
 
-/* ---------- Responsive Adjustments ---------- */
+/* ---------- Responsive ---------- */
 @media (max-width: 576px) {
   .auth-card {
-    margin: 1.5rem 1rem;
+    margin: 2rem 1rem;
   }
-
   .auth-card .card-content {
     padding: 2rem 1.5rem 1rem;
   }
 }
 
-/* ---------- Optional Dark Mode Support ---------- */
+/* ---------- Dark Mode ---------- */
 @media (prefers-color-scheme: dark) {
   body {
     background: #1e2228;
@@ -249,10 +245,11 @@ body {
   .auth-card a:hover {
     color: #4daee0;
   }
-  .auth-card .form-text {
-    color: #a0a0a0;
+  .auth-card .form-text,
+  .auth-card .text-danger {
+    color: #aaa;
   }
-  .auth-card .text-center.mt-3 p {
+  .auth-card .card-footer p {
     color: #bbb;
   }
 }

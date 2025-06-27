@@ -25,9 +25,9 @@
         <span class="sidebar-text">Dashboard</span>
       </a>
 
-      {# Patients #}
-      <a href="{% url 'doctor:records' %}"
-         class="sidebar-item{% if request.resolver_match.view_name == 'doctor:records' %} active{% endif %}">
+      {# Patients - UPDATED VERSION #}
+      <a href="{% url 'patient:list' %}"
+         class="sidebar-item{% if request.resolver_match.namespace == 'patient' and request.resolver_match.url_name == 'list' %} active{% endif %}">
         <span class="sidebar-glow"></span>
         <i class="bi bi-people"></i>
         <span class="sidebar-text">Patients</span>
@@ -48,14 +48,14 @@
         <i class="bi bi-archive"></i>
         <span class="sidebar-text">Archive</span>
       </a>
-
+{% comment %} 
       {# Queue Status #}
-      <a href="{% url 'appointments:queue' %}"
-         class="sidebar-item{% if request.resolver_match.view_name == 'appointments:queue' %} active{% endif %}">
+      <a href="{% url 'appointments:queue_display' %}"
+         class="sidebar-item{% if request.resolver_match.view_name == 'appointments:queue_display' %} active{% endif %}">
         <span class="sidebar-glow"></span>
         <i class="bi bi-list-ul"></i>
         <span class="sidebar-text">Queue Status</span>
-      </a>
+      </a> {% endcomment %}
 
       {# New Prescription #}
       {% if today_appointments %}
@@ -106,10 +106,11 @@
           <a href="{% url 'medical_archive:archive_list' %}" class="action-btn" title="My Archive">
             <i class="bi bi-archive"></i>
           </a>
-          <a href="{% url 'doctor:records' %}" class="action-btn" title="My Patients">
+          <!-- Updated Patients link to match sidebar -->
+          <a href="{% url 'patient:list' %}" class="action-btn" title="My Patients">
             <i class="bi bi-people"></i>
           </a>
-          <a href="{% url 'appointments:queue' %}" class="action-btn" title="Queue Status">
+          <a href="{% url 'appointments:queue_display' %}" class="action-btn" title="Queue Status">
             <i class="bi bi-list-ul"></i>
           </a>
           {% if today_appointments %}

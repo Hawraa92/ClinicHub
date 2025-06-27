@@ -3,74 +3,53 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.db import transaction
-from accounts.forms import RegisterForm, LoginForm
-from doctor.models import Doctor
+from .forms import PatientSignUpForm, LoginForm
 
-
-@transaction.atomic
-def register_view(request):
+def register(request):
     """
-    Register a new user (doctor, secretary, or patient).
-    If the user chooses the role 'doctor', create a corresponding Doctor record.
+    Public registration endpoint for patients only.
     """
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = PatientSignUpForm(request.POST)
         if form.is_valid():
-            # Save the User instance (sets password internally in RegisterForm.save())
             user = form.save()
-
-            # If the new user is a doctor, create a Doctor record
-            if user.role == 'doctor':
-                Doctor.objects.create(
-                    user=user,
-                    full_name=user.username,    # أو user.get_full_name() إذا كنت تستخدمين حقول الاسم الكاملة
-                    specialty='',
-                    phone='',
-                    clinic_address=''
-                )
-
-            messages.success(request, "✅ Account created successfully. Please log in.")
-            return redirect('accounts:login')
+            login(request, user)
+            messages.success(request, "✅ Your patient account has been created and you are now logged in.")
+            return redirect('patient:dashboard')
         else:
             messages.error(request, "❌ Please correct the errors below.")
     else:
-        form = RegisterForm()
-
+        form = PatientSignUpForm()
     return render(request, 'accounts/register.html', {'form': form})
-
 
 def login_view(request):
     """
-    Authenticate and log in a user. Redirects to the correct dashboard based on user role.
+    Authenticate and log in a user, redirecting by role.
     """
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-
-            # Role-based redirection
-            if user.role == 'doctor':
+            # Redirect based on role
+            if user.role == 'patient':
+                return redirect('patient:dashboard')
+            elif user.role == 'doctor':
                 return redirect('doctor:dashboard')
             elif user.role == 'secretary':
                 return redirect('appointments:secretary_dashboard')
-            elif user.role == 'patient':
-                return redirect('patients:dashboard')
             else:
-                messages.warning(request, "⚠ Unknown user role. Redirected to homepage.")
+                messages.warning(request, "⚠ Unknown role—sending you home.")
                 return redirect('home:index')
         else:
-            messages.error(request, "❌ Invalid login credentials.")
+            messages.error(request, "❌ Invalid email or password.")
     else:
         form = LoginForm()
-
     return render(request, 'accounts/login.html', {'form': form})
-
 
 def logout_view(request):
     """
-    Log out the current user and redirect to login page.
+    Log out the current user and send them to login page.
     """
     logout(request)
     messages.info(request, "👋 You have been logged out.")

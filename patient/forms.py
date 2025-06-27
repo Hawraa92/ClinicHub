@@ -3,9 +3,9 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from .models import Patient
+from doctor.models import Doctor  # ✅ أضفنا موديل الطبيب
 
 User = get_user_model()
-
 
 # === Doctor Form (Full Access) ===
 class DoctorPatientForm(forms.ModelForm):
@@ -29,9 +29,10 @@ class DoctorPatientForm(forms.ModelForm):
             'smoking_history',
             'race',
             'clinical_notes',
-            'doctor',  # الطبيب المسؤول عن المريض
+            'doctor',
         ]
         widgets = {
+            # نفس إعداداتك السابقة...
             'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full name'}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'gender': forms.Select(attrs={'class': 'form-select'}),
@@ -54,8 +55,8 @@ class DoctorPatientForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # فلترة حقل الطبيب ليعرض فقط المستخدمين بدور 'doctor'
-        self.fields['doctor'].queryset = User.objects.filter(role='doctor')
+        self.fields['doctor'].queryset = Doctor.objects.all()
+        self.fields['doctor'].label_from_instance = lambda obj: obj.full_name
 
 
 # === Secretary Form (Limited Access) ===
@@ -66,7 +67,7 @@ class SecretaryPatientForm(forms.ModelForm):
             'full_name',
             'date_of_birth',
             'address',
-            'doctor',  # تم إضافة هذا الحقل حتى تختار السكرتيرة الطبيب المعالج
+            'doctor',
         ]
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full name'}),
@@ -77,6 +78,6 @@ class SecretaryPatientForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # عرض الأطباء فقط في القائمة
-        self.fields['doctor'].queryset = User.objects.filter(role='doctor')
-        self.fields['doctor'].required = True  # جعل اختيار الطبيب إلزاميًا للسكرتيرة
+        self.fields['doctor'].queryset = Doctor.objects.all()
+        self.fields['doctor'].required = True
+        self.fields['doctor'].label_from_instance = lambda obj: obj.full_name

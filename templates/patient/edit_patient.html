@@ -1,57 +1,96 @@
+<!-- edit_patient.html -->
 {% extends "base.html" %}
 {% load static %}
+{% load group_filters %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/patient/edit_patient.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="card shadow-lg p-4">
-    <h2 class="text-center mb-4 text-primary">✏ Edit Patient Information</h2>
+<div class="edit-patient-container">
+  <div class="patient-form-card">
+    <div class="form-header">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M15 4v2h3v15H6V6h3V4H3v18h18V4z"/>
+          <path d="M8 2h8v6h-1V3H9v5H8zm7 13h-2v-3h-2v3H9v2h2v3h2v-3h2z"/>
+        </svg>
+      </div>
+      <h1 class="gradient-text">Edit Patient Record</h1>
+      <p class="subtitle">Update medical information securely</p>
+    </div>
 
+    {% if request.user|has_group:"Doctors" or request.user|has_group:"Secretaries" %}
     <form method="post" class="needs-validation" novalidate>
       {% csrf_token %}
+      <div class="form-grid">
 
-      <div class="row g-3">
-
-        {% if request.user.groups.first.name == "Doctors" %}
-          {# 🩺 Doctor sees and edits all fields #}
+        {% if request.user|has_group:"Doctors" %}
           {% for field in form %}
-            <div class="col-md-6">
-              <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
-              {{ field }}
-              {% if field.help_text %}
-                <small class="form-text text-muted">{{ field.help_text }}</small>
-              {% endif %}
-              {% for error in field.errors %}
-                <div class="text-danger">{{ error }}</div>
-              {% endfor %}
-            </div>
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}" class="input-label">
+              {{ field.label }}
+              {% if field.field.required %}<span class="required">*</span>{% endif %}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="help-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+              <div class="error-message">{{ error }}</div>
+            {% endfor %}
+          </div>
           {% endfor %}
 
         {% else %}
-          {# 🧾 Secretary sees limited fields only #}
           {% for field in form %}
             {% if field.name == 'full_name' or field.name == 'date_of_birth' or field.name == 'address' %}
-              <div class="col-md-6">
-                <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                  <small class="form-text text-muted">{{ field.help_text }}</small>
-                {% endif %}
-                {% for error in field.errors %}
-                  <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-              </div>
+            <div class="form-group">
+              <label for="{{ field.id_for_label }}" class="input-label">
+                {{ field.label }}
+                {% if field.field.required %}<span class="required">*</span>{% endif %}
+              </label>
+              {{ field }}
+              {% if field.help_text %}
+                <div class="help-text">{{ field.help_text }}</div>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="error-message">{{ error }}</div>
+              {% endfor %}
+            </div>
             {% endif %}
           {% endfor %}
         {% endif %}
 
       </div>
 
-      <div class="mt-4 text-end">
-        <button type="submit" class="btn btn-success btn-lg">💾 Save Changes</button>
-        <a href="{% url 'patients:detail' patient.pk %}" class="btn btn-secondary btn-lg">Cancel</a>
+      <div class="form-actions">
+        <button type="submit" class="save-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M5 2h14a1 1 0 011 1v19a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1zm4 18a3 3 0 100-6 3 3 0 000 6zM17 4h-2v5h-2V4h-2v5H9V4H7v12h10V4z"/>
+          </svg>
+          Save Changes
+        </button>
+        <a href="{% url 'patient:detail' patient.pk %}" class="cancel-btn">
+          Cancel
+        </a>
       </div>
-
     </form>
+    {% else %}
+    <div class="access-denied">
+      <div class="access-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2zm8 6.5l-1.5 1.5-2.5-2.5-2.5 2.5-1.5-1.5 2.5-2.5-2.5-2.5 1.5-1.5 2.5 2.5 2.5-2.5 1.5 1.5-2.5 2.5 2.5 2.5z"/>
+        </svg>
+      </div>
+      <h3>Access Restricted</h3>
+      <p>You don't have permission to edit patient records</p>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

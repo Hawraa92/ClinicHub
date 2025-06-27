@@ -1,209 +1,334 @@
-{% extends "base.html" %}
 {% load static %}
-
-{% block extra_head %}
-  <link rel="stylesheet" href="{% static 'css/global/home.css' %}">
-  <script src="{% static 'js/home/home.js' %}" defer></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-{% endblock %}
-
-{% block content %}
-
-<!-- 🌌 Hero Section -->
-<section class="innerverse-hero position-relative overflow-hidden">
-  <canvas id="innerverse-canvas"></canvas>
-  <div class="container">
-    <div class="innerverse-overlay text-center text-white" data-aos="fade-up">
-      <h1>Welcome to ClinicHub</h1>
-      <p>A calm space for smart care and modern healthcare solutions.</p>
-      <div class="hero-btns">
-        <a href="#" class="btn btn-primary btn-lg">
-          <i class="fas fa-user-md me-2"></i> Doctor Zone
-        </a>
-        <a href="#" class="btn btn-outline btn-lg">
-          <i class="fas fa-archive me-2"></i> Medical Archives
-        </a>
-      </div>
-    </div>
-  </div>
-  <div class="hero-wave">
-    <!-- SVG wave as in original -->
-    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-      <path d="M0,0V46.29..." class="shape-fill"></path>
-      <path d="M0,0V15.81..." class="shape-fill"></path>
-      <path d="M0,0V5.63..." class="shape-fill"></path>
-    </svg>
-  </div>
-</section>
-
-<!-- 💡 Features Section -->
-<section class="magic-features">
-  <div class="container">
-    <div class="section-title">
-      <h2>Our Medical Solutions</h2>
-      <p>Comprehensive healthcare management for modern practices</p>
-    </div>
-    <div class="row">
-      <div class="col-md-4" data-aos="fade-up">
-        <div class="glass-card feature-card floating">
-          <div class="feature-icon">
-            <i class="fas fa-folder-medical"></i>
-          </div>
-          <h4>Patient Records</h4>
-          <p>Securely store and review detailed medical histories with our encrypted digital system.</p>
-        </div>
-      </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-        <div class="glass-card feature-card floating">
-          <div class="feature-icon">
-            <i class="fas fa-heartbeat"></i>
-          </div>
-          <h4>Health Insights</h4>
-          <p>Track vitals, treatments, and alerts in one comprehensive dashboard.</p>
-        </div>
-      </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-        <div class="glass-card feature-card floating">
-          <div class="feature-icon">
-            <i class="fas fa-robot"></i>
-          </div>
-          <h4>Smart AI</h4>
-          <p>Get intelligent diagnosis suggestions based on medical data patterns.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 📊 Stats Section -->
-<section class="stats-section">
-  <div class="container">
-    <div class="stats-container">
-      <div class="stat-card" data-aos="fade-up">
-        <div class="stat-number" data-count="12500">12,500+</div>
-        <div class="stat-text">Patients Managed</div>
-      </div>
-      <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
-        <div class="stat-number" data-count="98">98%</div>
-        <div class="stat-text">Satisfaction Rate</div>
-      </div>
-      <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
-        <div class="stat-number" data-count="240">240+</div>
-        <div class="stat-text">Medical Professionals</div>
-      </div>
-      <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
-        <div class="stat-number" data-count="15">15+</div>
-        <div class="stat-text">Years of Experience</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 🚀 Call to Action -->
-<section class="magic-cta">
-  <div class="cta-pattern"></div>
-  <div class="container">
-    <div class="cta-content text-center">
-      <h2>Start transforming your clinic now</h2>
-      <p>Everything you need to manage your patients with clarity and calm</p>
-      <div class="cta-buttons">
-        <a href="#" class="cta-btn"><i class="fas fa-calendar-check"></i><span>Book Appointment</span></a>
-        <a href="#" class="cta-btn"><i class="fas fa-list-ol"></i><span>Queue Status</span></a>
-        <a href="#" class="cta-btn"><i class="fas fa-file-prescription"></i><span>New Prescription</span></a>
-        <a href="#" class="cta-btn"><i class="fas fa-prescription-bottle-alt"></i><span>Prescriptions</span></a>
-        <a href="#" class="cta-btn"><i class="fas fa-archive"></i><span>Archives</span></a>
-        <a href="#" class="cta-btn"><i class="fas fa-user-plus"></i><span>Add New Patient</span></a>
-        <a href="#" class="cta-btn"><i class="fas fa-users"></i><span>View All Patients</span></a>
-        <a href="#" class="cta-btn"><i class="fas fa-plus-circle"></i><span>Add Archive</span></a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 💬 Testimonials -->
-<section class="testimonials">
-  <div class="container">
-    <div class="section-title">
-      <h2>What Our Doctors Say</h2>
-      <p>Hear from medical professionals using ClinicHub</p>
-    </div>
-    <div class="row">
-      <div class="col-md-6" data-aos="fade-up">
-        <div class="testimonial-card">
-          <p class="testimonial-text">"ClinicHub has transformed our practice. The patient management system saves us hours each week and the AI diagnostic suggestions have been surprisingly accurate."</p>
-          <div class="testimonial-author">
-            <div class="author-avatar"><i class="fas fa-user-md"></i></div>
-            <div class="author-info">
-              <h4>Dr. Sarah Johnson</h4>
-              <p>Chief Medical Officer, MedCenter</p>
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicHub | AI-Powered Healthcare Platform</title>
+    <link rel="stylesheet" href="{% static 'css/global/home.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+</head>
+<body>
+    <!-- Neuro-synaptic Background Animation -->
+    <canvas id="neuroCanvas"></canvas>
+    <div class="neuro-overlay"></div>
+    
+    <!-- Medical Navigation -->
+    <header class="medical-nav">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-pulse"></div>
+                <i class="fas fa-heartbeat"></i>
+                <span>Clinic<span class="highlight">Hub</span></span>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
-        <div class="testimonial-card">
-          <p class="testimonial-text">"The secure archive system gives me peace of mind knowing patient records are both accessible and protected. The mobile access has been a game-changer for our team."</p>
-          <div class="testimonial-author">
-            <div class="author-avatar"><i class="fas fa-user-md"></i></div>
-            <div class="author-info">
-              <h4>Dr. Michael Chen</h4>
-              <p>Neurology Specialist</p>
+            <nav class="medical-nav-links">
+                <ul>
+                    <li>
+                        <a href="#">
+                            <div class="nav-icon">
+                                <i class="fas fa-home"></i>
+                                <div class="nav-pulse"></div>
+                            </div>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <div class="nav-icon">
+                                <i class="fas fa-user-md"></i>
+                                <div class="nav-pulse"></div>
+                            </div>
+                            <span>Doctors</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <div class="nav-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                                <div class="nav-pulse"></div>
+                            </div>
+                            <span>Appointments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <div class="nav-icon">
+                                <i class="fas fa-file-medical"></i>
+                                <div class="nav-pulse"></div>
+                            </div>
+                            <span>Records</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                {% if user.is_authenticated %}
+                    <div class="user-profile">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-md"></i>
+                            <div class="profile-ring"></div>
+                        </div>
+                        <div class="user-info">
+                            <span>Dr. {{ user.first_name }}</span>
+                            <div class="status-indicator active"></div>
+                        </div>
+                        <div class="user-menu">
+                            <a href="#"><i class="fas fa-user-cog"></i> Profile Settings</a>
+                            <a href="#"><i class="fas fa-stethoscope"></i> My Dashboard</a>
+                            <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="medical-btn login-btn">
+                        <i class="fas fa-fingerprint"></i>
+                        <span>Secure Login</span>
+                    </a>
+                {% endif %}
             </div>
-          </div>
+            <div class="mobile-menu-toggle">
+                <div class="medical-hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </header>
 
-<!-- 🔚 Footer -->
-<footer class="footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4 mb-4 mb-md-0">
-        <h5>ClinicHub</h5>
-        <p>Modern healthcare solutions for the digital age. Empowering medical professionals with smart tools for better patient care.</p>
-        <div class="social-links">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-linkedin-in"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
+    <!-- Medical Hero Section -->
+    <section class="medical-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="title-gradient">Intelligent Healthcare</span>
+                    <span class="typing-text"></span>
+                </h1>
+                <p class="hero-subtitle">AI-powered diagnostics and patient management for modern medicine</p>
+                
+                <div class="medical-stats">
+                    <div class="stat-card">
+                        <div class="stat-visualization"><div class="stat-wave"></div></div>
+                        <i class="fas fa-user-injured"></i>
+                        <div>
+                            <span class="stat-number" data-count="5240">0</span>
+                            <span>Patients Managed</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-visualization"><div class="stat-wave"></div></div>
+                        <i class="fas fa-stethoscope"></i>
+                        <div>
+                            <span class="stat-number" data-count="127">0</span>
+                            <span>Medical Professionals</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-visualization"><div class="stat-wave"></div></div>
+                        <i class="fas fa-clinic-medical"></i>
+                        <div>
+                            <span class="stat-number" data-count="18">0</span>
+                            <span>Connected Clinics</span>
+                        </div>
+                    </div>
+                </div>
+                {% if user.is_authenticated %}
+                <div class="quick-actions">
+                    <a href="{% url 'patient:create_patient' %}" class="medical-action">
+                        <div class="action-icon">
+                            <i class="fas fa-user-plus"></i>
+                            <div class="action-pulse"></div>
+                        </div>
+                        <span>New Patient</span>
+                    </a>
+                    <a href="{% url 'appointments:create_appointment' %}" class="medical-action">
+                        <div class="action-icon">
+                            <i class="fas fa-calendar-check"></i>
+                            <div class="action-pulse"></div>
+                        </div>
+                        <span>Book Appointment</span>
+                    </a>
+                    <a href="{% url 'prescription:new_prescription' %}" class="medical-action">
+                        <div class="action-icon">
+                            <i class="fas fa-file-prescription"></i>
+                            <div class="action-pulse"></div>
+                        </div>
+                        <span>New Prescription</span>
+                    </a>
+                    <a href="{% url 'appointments:queue_display' %}" class="medical-action">
+                        <div class="action-icon">
+                            <i class="fas fa-tv"></i>
+                            <div class="action-pulse"></div>
+                        </div>
+                        <span>Queue Display</span>
+                    </a>
+                </div>
+                {% else %}
+                <div class="cta-buttons">
+                    <a href="{% url 'accounts:login' %}" class="medical-btn primary">
+                        <i class="fas fa-brain"></i>
+                        <span>AI-Powered Login</span>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="hero-visualization">
+                <div class="dna-strand">
+                    <div class="dna-base"></div>
+                    <div class="dna-base"></div>
+                    <div class="dna-base"></div>
+                    <div class="dna-base"></div>
+                </div>
+                <div class="organ-preview">
+                    <div class="organ heart active" data-organ="heart">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="organ brain" data-organ="brain">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="organ lung" data-organ="lung">
+                        <i class="fas fa-lungs"></i>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-md-2 mb-4 mb-md-0">
-        <h5>Quick Links</h5>
-        <ul class="footer-links">
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Features</a></li>
-          <li><a href="#">Solutions</a></li>
-          <li><a href="#">Pricing</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-      </div>
-      <div class="col-md-3 mb-4 mb-md-0">
-        <h5>Medical Resources</h5>
-        <ul class="footer-links">
-          <li><a href="#">Patient Portal</a></li>
-          <li><a href="#">Medical Records</a></li>
-          <li><a href="#">Health Insights</a></li>
-          <li><a href="#">Research Library</a></li>
-          <li><a href="#">Support Center</a></li>
-        </ul>
-      </div>
-      <div class="col-md-3">
-        <h5>Contact Us</h5>
-        <ul class="footer-links">
-          <li><i class="fas fa-map-marker-alt me-2"></i> 123 Medical Ave, Health City</li>
-          <li><i class="fas fa-phone me-2"></i> (123) 456-7890</li>
-          <li><i class="fas fa-envelope me-2"></i> info@clinichub.com</li>
-        </ul>
-      </div>
-    </div>
-    <div class="copyright">
-      <p>&copy; 2024 ClinicHub. All rights reserved. Designed by Hawraa with love.</p>
-    </div>
-  </div>
-</footer>
+    </section>
 
-{% endblock %}
+    <!-- Registered Doctors Showcase -->
+    <section class="doctors-section">
+        <div class="container">
+            <h2 class="section-title">Meet Our <span class="highlight">Doctors</span></h2>
+            <p class="section-subtitle">Trusted, experienced, and ready to care for you</p>
+            
+            <div class="doctors-grid">
+                {% for doctor in doctors %}
+                <div class="doctor-card">
+                    <div class="card-header">
+                        <div class="doctor-avatar">
+                            {% if doctor.avatar %}
+                                <img src="{{ doctor.avatar.url }}" alt="Dr. {{ doctor.full_name }}">
+                            {% else %}
+                                <div class="avatar-placeholder">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="doctor-info">
+                            <h3>Dr. {{ doctor.full_name }}</h3>
+                            <p class="specialty">
+                                <i class="fas fa-stethoscope"></i> {{ doctor.specialty }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="contact-info">
+                            <!-- Consultation Fee -->
+                            <div class="contact-item">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span>{{ doctor.consultation_fee }} IQD per session</span>
+                            </div>
+                            <!-- Experience -->
+                            {% if doctor.experience_years %}
+                            <div class="contact-item">
+                                <i class="fas fa-briefcase"></i>
+                                <span>{{ doctor.experience_years }} years experience</span>
+                            </div>
+                            {% else %}
+                            <div class="contact-item">
+                                <i class="fas fa-briefcase"></i>
+                                <span>Experience not specified</span>
+                            </div>
+                            {% endif %}
+                            <!-- Phone -->
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ doctor.phone }}</span>
+                            </div>
+                            <!-- Email -->
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>{{ doctor.user.email }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        
+                        <!-- <a href="{% url 'appointments:patient_book' %}?doctor={{ doctor.id }}" class="appointment-btn">    -->
+                        <a href="{% url 'appointments:patient_book' %}?doctor_name={{ doctor.full_name|urlencode }}" class="appointment-btn">Book Appointment</a>
+     
+                    </div>
+                </div>
+                {% empty %}
+                <p class="no-doctors">No doctors are currently registered.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Diagnostic Demo -->
+    <section class="ai-demo">
+        <div class="container">
+            <div class="ai-visualization">
+                <div class="ai-brain">
+                    <div class="brain-lobe frontal"></div>
+                    <div class="brain-lobe parietal"></div>
+                    <div class="brain-lobe temporal"></div>
+                    <div class="brain-lobe occipital"></div>
+                    <div class="neuron-activity"></div>
+                </div>
+                <div class="ai-process">
+                    <div class="process-step active">
+                        <span>1</span>
+                        <p>Input Symptoms</p>
+                    </div>
+                    <div class="process-step">
+                        <span>2</span>
+                        <p>Pattern Recognition</p>
+                    </div>
+                    <div class="process-step">
+                        <span>3</span>
+                        <p>Differential Analysis</p>
+                    </div>
+                    <div class="process-step">
+                        <span>4</span>
+                        <p>Treatment Plan</p>
+                    </div>
+                </div>
+            </div>
+            <div class="ai-content">
+                <h2 class="section-title">AI Diagnostic <span class="highlight">Assistant</span></h2>
+                <p class="section-subtitle">Experience our neural network in action</p>
+                <div class="ai-stats">
+                    <div class="stat">
+                        <div class="stat-value">97.3%</div>
+                        <div class="stat-label">Diagnostic Accuracy</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">300+</div>
+                        <div class="stat-label">Conditions Recognized</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">24ms</div>
+                        <div class="stat-label">Average Analysis Time</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer-bottom">
+        <p>&copy; <span id="current-year"></span> ClinicHub System. All rights reserved. Designed by Hawraa</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    <script src="{% static 'js/home/neuro.js' %}"></script>
+    <script src="{% static 'js/home/home.js' %}"></script>
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

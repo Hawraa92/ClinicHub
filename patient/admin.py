@@ -10,16 +10,30 @@ class PatientAdmin(admin.ModelAdmin):
         'mobile',
         'email',
         'gender',
-        'doctor',               # إضافة عمود "الطبيب المعالج"
+        'doctor',               # Assigned doctor
         'diabetes_prediction'
     ]
-    search_fields = ['full_name', 'mobile', 'email']
+    search_fields = [
+        'full_name',
+        'mobile',
+        'email'
+    ]
     list_filter = [
         'gender',
         'hypertension',
         'heart_disease',
         'smoking_history',
         'race',
-        'doctor'               # فلترة حسب الطبيب أيضاً
+        'doctor'               # Filter by assigned doctor
     ]
-    readonly_fields = ['diabetes_prediction']
+    readonly_fields = [
+        'diabetes_prediction'  # AI-generated field should not be editable
+    ]
+    list_select_related = ('doctor',)  # Optimize joins when displaying doctor
+
+    @admin.display(description='Age')
+    def age(self, obj):
+        """
+        Display computed age from date_of_birth, if available.
+        """
+        return obj.age or '—'

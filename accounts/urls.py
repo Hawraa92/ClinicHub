@@ -2,17 +2,21 @@
 
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from accounts.views import register_view, login_view, logout_view
+from .views import register, login_view, logout_view
 
 app_name = 'accounts'
 
 urlpatterns = [
-    # Registration, Login, Logout
-    path('register/', register_view, name='register'),
+    # Patient self-registration
+    path('register/', register, name='register'),
+
+    # Login using custom login_view (redirects by role)
     path('login/', login_view, name='login'),
+
+    # Logout using custom logout_view
     path('logout/', logout_view, name='logout'),
 
-    # Password reset (via email)
+    # Password reset request
     path(
         'password_reset/',
         auth_views.PasswordResetView.as_view(
@@ -23,6 +27,8 @@ urlpatterns = [
         ),
         name='password_reset'
     ),
+
+    # Password reset link sent
     path(
         'password_reset/done/',
         auth_views.PasswordResetDoneView.as_view(
@@ -30,6 +36,8 @@ urlpatterns = [
         ),
         name='password_reset_done'
     ),
+
+    # Password reset confirm (via email link)
     path(
         'reset/<uidb64>/<token>/',
         auth_views.PasswordResetConfirmView.as_view(
@@ -38,6 +46,8 @@ urlpatterns = [
         ),
         name='password_reset_confirm'
     ),
+
+    # Password reset complete
     path(
         'reset/done/',
         auth_views.PasswordResetCompleteView.as_view(

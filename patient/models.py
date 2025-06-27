@@ -5,6 +5,8 @@ from django.conf import settings
 from datetime import date
 from django.core.exceptions import ValidationError
 import re
+from doctor.models import Doctor
+
 
 # Validate mobile number
 def validate_mobile(value):
@@ -12,6 +14,16 @@ def validate_mobile(value):
         raise ValidationError(f"{value} is not a valid phone number.")
 
 class Patient(models.Model):
+    # --- ربط Patient بحساب User (خليه اختياري) ---
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='patient',
+        verbose_name='User Account',
+        null=True,
+        blank=True
+    )
+
     # --- Basic Information ---
     full_name = models.CharField(max_length=100, verbose_name="Full Name")
     date_of_birth = models.DateField(null=True, blank=True, verbose_name="Date of Birth")
@@ -58,7 +70,6 @@ class Patient(models.Model):
         ],
         verbose_name="Smoking History"
     )
-
     race = models.CharField(
         max_length=50,
         null=True,
@@ -72,7 +83,6 @@ class Patient(models.Model):
         ],
         verbose_name="Race"
     )
-
     diabetes_prediction = models.CharField(
         max_length=50,
         null=True,
@@ -90,15 +100,23 @@ class Patient(models.Model):
     )
 
     # --- Link to Doctor ---
+    # doctor = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL,
+    #     on_delete=models.SET_NULL,
+    #     null=True,
+    #     blank=True,
+    #     limit_choices_to={'role': 'doctor'},
+    #     related_name='my_patients',
+    #     verbose_name="Assigned Doctor"
+    # )
+
     doctor = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        limit_choices_to={'role': 'doctor'},
-        related_name='my_patients',
-        verbose_name="Assigned Doctor"
-    )
+    Doctor,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    verbose_name="Assigned Doctor"
+)
 
     # --- Record Creation Time ---
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created At")
@@ -110,13 +128,16 @@ class Patient(models.Model):
 
     @property
     def age(self):
-        if self.date_of_birth:
-            today = date.today()
-            years = today.year - self.date_of_birth.year
-            if (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day):
-                years -= 1
-            return years
-        return None
+        """
+        Compute age automatically if date_of_birth is set.
+        """
+        if not self.date_of_birth:
+            return None
+        today = date.today()
+        years = today.year - self.date_of_birth.year
+        if (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day):
+            years -= 1
+        return years
 
     def __str__(self):
         return self.full_name

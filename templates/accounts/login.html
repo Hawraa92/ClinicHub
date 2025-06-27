@@ -1,43 +1,70 @@
-{# templates/accounts/login.html #}
 {% extends "base.html" %}
 {% load static %}
 
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'css/accounts/auth.css' %}">
+  <link rel="stylesheet" href="{% static 'css/accounts/login.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 {% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-  <div class="card shadow-lg auth-card">
-    <div class="card-content">
-      <h2 class="text-center text-primary mb-4">🔐 Sign In</h2>
-
-      <form method="post" novalidate>
-        {% csrf_token %}
-        {% for field in form %}
-          <div class="mb-3">
-            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-            {{ field }}
-            {% if field.help_text %}
-              <div class="form-text">{{ field.help_text }}</div>
-            {% endif %}
-            {% for error in field.errors %}
-              <div class="text-danger">{{ error }}</div>
-            {% endfor %}
-          </div>
-        {% endfor %}
-
-        <div class="forgot-password mb-3">
-          <a href="{% url 'accounts:password_reset' %}">Forgot password?</a>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-      </form>
-
-      <div class="text-center mt-3">
-        <p>Don't have an account? <a href="{% url 'accounts:register' %}">Register now</a></p>
-      </div>
+<div class="login-container">
+  <div class="auth-card">
+    <div class="card-header">
+      <img src="{% static 'images/medical-logo.png' %}" alt="Medical Center Logo" class="logo">
+      <h2><i class="fas fa-hospital-user"></i> Medical Portal Login</h2>
+      <p>Secure access to your healthcare dashboard</p>
     </div>
-  </div>
+
+    {% if messages %}
+      <div class="alert-container">
+        {% for msg in messages %}
+          <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for err in form.non_field_errors %}
+          <div>{{ err }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate class="auth-form">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}"><i class="fas fa-user-nurse"></i> {{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="help-text">{{ field.help_text }}</div>
+          {% endif %}
+          {% for error in field.errors %}
+            <div class="error-text">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="forgot-password">
+        <a href="{% url 'accounts:password_reset' %}">
+          <i class="fas fa-lock"></i> Forgot your password?
+        </a>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <i class="fas fa-sign-in-alt"></i> Access Medical Portal
+      </button>
+    </form>
+
+    <div class="register-link">
+      <p>New to our healthcare system? <a href="{% url 'accounts:register' %}">Create Provider Account</a></p>
+    </div>
+    
+   
+
+  <footer class="login-footer">
+    <p>© 2025 ClinicHub. All rights reserved. Designed by Hawraa</p>
+  </footer>
 </div>
 {% endblock %}
